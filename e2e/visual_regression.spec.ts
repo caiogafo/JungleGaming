@@ -9,6 +9,7 @@ test.describe('Regressão Visual dos Fluxos Principais (Desktop e Mobile)', () =
     await expect(page).toHaveScreenshot('home-catalog.png', {
       maxDiffPixelRatio: 0.05,
       animations: 'disabled',
+      fullPage: true,
     })
   })
 

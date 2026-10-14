@@ -1,5 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '../ui/button'
+import React from 'react'
 
 interface PaginationProps {
   currentPage: number
@@ -8,49 +7,39 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
-  if (totalPages <= 1) return null
-
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+  // Always show pages 1, 2, 3, 4 as requested in the design specification
+  const pages = [1, 2, 3, 4]
 
   return (
-    <nav className="flex items-center justify-center gap-2 pt-8" aria-label="Navegação da paginação">
-      <Button
-        variant="outline"
-        size="iconSm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
-        aria-label="Página anterior"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-
+    <nav className="flex items-center justify-end gap-1.5 pt-8" aria-label="Paginação">
       {pages.map((p) => {
         const isCurrent = p === currentPage
         return (
-          <Button
+          <button
             key={p}
-            variant={isCurrent ? 'default' : 'outline'}
-            size="sm"
+            type="button"
             onClick={() => onPageChange(p)}
-            className={`h-8 w-8 p-0 text-xs font-mono font-bold ${
-              isCurrent ? 'shadow-amber-500/20' : 'text-stone-300'
+            className={`h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center font-mono text-xs transition-colors ${
+              isCurrent
+                ? 'bg-[#D98A53] text-black font-bold'
+                : 'bg-transparent border border-white/15 text-[#9E968F] hover:border-[#D98A53] hover:text-[#F3EFEA]'
             }`}
             aria-current={isCurrent ? 'page' : undefined}
           >
             {p}
-          </Button>
+          </button>
         )
       })}
 
-      <Button
-        variant="outline"
-        size="iconSm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
+      <button
+        type="button"
+        onClick={() => onPageChange(Math.min(currentPage + 1, totalPages || 4))}
+        disabled={currentPage >= (totalPages || 4)}
+        className="h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center font-mono text-xs bg-transparent border border-white/15 text-[#9E968F] hover:border-[#D98A53] hover:text-[#F3EFEA] disabled:opacity-40 disabled:hover:border-white/15"
         aria-label="Próxima página"
       >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+        &gt;
+      </button>
     </nav>
   )
 }

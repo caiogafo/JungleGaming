@@ -39,6 +39,7 @@ export interface NFT {
   blockchain: 'Ethereum' | 'Polygon' | 'Arbitrum'
   likesCount: number
   isFeatured?: boolean
+  originalPriceEth?: string
   createdAt: string
   version: number // for event ordering & conflict detection
 }

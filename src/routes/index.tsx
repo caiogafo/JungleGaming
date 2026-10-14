@@ -4,6 +4,8 @@ import { rootRoute } from './__root'
 import { HeroBanner } from '../components/catalog/HeroBanner'
 import { FilterSidebar } from '../components/catalog/FilterSidebar'
 import { NftGrid } from '../components/catalog/NftGrid'
+import { PromoBanners } from '../components/catalog/PromoBanners'
+import { MintingJournal } from '../components/catalog/MintingJournal'
 import { useNfts } from '../hooks/useNfts'
 import type { NftFilterParams } from '../types/nft'
 
@@ -46,7 +48,7 @@ function CatalogPage() {
     maxPrice: searchParams.maxPrice,
     sort: searchParams.sort,
     page: searchParams.page,
-    pageSize: 6,
+    pageSize: 8,
   })
 
   const updateFilters = (newFilters: Partial<NftFilterParams>) => {
@@ -70,17 +72,19 @@ function CatalogPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       {/* Hero Banner Section */}
       <HeroBanner />
 
       {/* Main Catalog with Responsive Sidebar */}
       <div id="catalogo" className="flex flex-col lg:flex-row gap-8 items-start pt-4">
-        <FilterSidebar
-          filters={searchParams}
-          onFilterChange={updateFilters}
-          onReset={resetFilters}
-        />
+        <div className="w-full lg:w-64 shrink-0">
+          <FilterSidebar
+            filters={searchParams}
+            onFilterChange={updateFilters}
+            onReset={resetFilters}
+          />
+        </div>
 
         <NftGrid
           nfts={data?.items || []}
@@ -89,11 +93,17 @@ function CatalogPage() {
           totalPages={data?.totalPages || 1}
           isLoading={isLoading}
           sort={searchParams.sort || 'recent'}
-          onSortChange={(sort) => updateFilters({ sort, page: 1 })}
+          onSortChange={(sort) => updateFilters({ sort: sort as any, page: 1 })}
           onPageChange={(page) => updateFilters({ page })}
           onResetFilters={resetFilters}
         />
       </div>
+
+      {/* 2.4 Banners Promocionais (2 Colunas) */}
+      <PromoBanners />
+
+      {/* 2.5 Diário da Cunhagem (Blog com 4 Colunas) */}
+      <MintingJournal />
     </div>
   )
 }

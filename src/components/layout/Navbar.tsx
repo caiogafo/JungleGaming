@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { ShoppingBag, Heart, User, LogOut, Wallet, Menu, X, ShieldCheck } from 'lucide-react'
+import { Search, ShoppingBag, Heart, User, LogOut, Wallet, Menu, X, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { useCart } from '../../hooks/useCart'
 import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
 
 interface NavbarProps {
   onOpenAuth: () => void
@@ -25,82 +24,85 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-[#282522] bg-[#151312]/95 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-primary rounded-lg p-1">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform overflow-hidden">
-            <img src="/assets/nfts/hero_emerald_ape.png" alt="Jungle Logo" className="h-8 w-8 object-cover rounded-lg" />
-          </div>
-          <div>
-            <span className="font-extrabold text-xl tracking-tight text-white flex items-center gap-1.5 font-sans">
-              JUNGLE <span className="text-amber-400">NFT</span>
-            </span>
-            <span className="text-[10px] text-stone-400 tracking-widest uppercase block -mt-1 font-mono">
-              Gaming Marketplace
-            </span>
-          </div>
+        {/* Esquerda: Logótipo KURIO em letras maiúsculas e fonte monospace */}
+        <Link
+          to="/"
+          className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-[#D98A53] rounded-lg p-1"
+        >
+          <span className="font-mono text-2xl font-bold tracking-[0.2em] text-[#F3EFEA] hover:text-[#D98A53] transition-colors">
+            KURIO
+          </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-300">
+        {/* Centro: Links de navegação em monospace: Início (laranja ativo), Mercado, Criadores, Aprenda */}
+        <nav className="hidden md:flex items-center gap-8 font-mono text-sm tracking-wide text-[#9E968F]">
           <Link
             to="/"
-            className="hover:text-amber-400 transition-colors [&.active]:text-amber-400 [&.active]:font-semibold"
+            className="text-[#D98A53] font-semibold hover:text-[#E59864] transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#D98A53]"
           >
-            Explorar Catálogo
+            Início
           </Link>
-          {isAuthenticated && (
-            <>
-              <Link
-                to="/profile"
-                className="hover:text-amber-400 transition-colors [&.active]:text-amber-400 [&.active]:font-semibold"
-              >
-                Meu Perfil
-              </Link>
-              <Link
-                to="/wallets"
-                className="hover:text-amber-400 transition-colors [&.active]:text-amber-400 [&.active]:font-semibold"
-              >
-                Carteiras Web3
-              </Link>
-            </>
-          )}
+          <a
+            href="#catalogo"
+            className="hover:text-[#D98A53] transition-colors"
+          >
+            Mercado
+          </a>
+          <a
+            href="#criadores"
+            className="hover:text-[#D98A53] transition-colors"
+          >
+            Criadores
+          </a>
+          <a
+            href="#diario"
+            className="hover:text-[#D98A53] transition-colors"
+          >
+            Aprenda
+          </a>
         </nav>
 
-        {/* Right Action Icons & Auth */}
-        <div className="flex items-center gap-3">
-          {/* Cart Button */}
-          <Button
-            variant="outline"
-            size="icon"
+        {/* Direita: Ícone de pesquisa, ícone de carrinho com badge, botão sólido Entrar */}
+        <div className="flex items-center gap-4">
+          {/* Ícone de pesquisa */}
+          <button
+            type="button"
+            className="text-[#9E968F] hover:text-[#F3EFEA] p-2 transition-colors focus:outline-none focus:ring-1 focus:ring-[#D98A53] rounded-md"
+            aria-label="Pesquisar"
+          >
+            <Search className="h-5 w-5" />
+          </button>
+
+          {/* Ícone de carrinho com badge */}
+          <button
+            type="button"
             onClick={onOpenCart}
-            className="relative border-border bg-surface-elevated hover:border-amber-500/50 text-stone-200"
+            className="relative p-2 text-[#9E968F] hover:text-[#F3EFEA] transition-colors focus:outline-none focus:ring-1 focus:ring-[#D98A53] rounded-md"
             aria-label="Abrir carrinho de compras"
           >
-            <ShoppingBag className="h-5 w-5 text-stone-200" />
-            {totalItemsCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary text-black font-extrabold text-xs flex items-center justify-center shadow-md animate-in zoom-in-50">
-                {totalItemsCount}
-              </span>
-            )}
-          </Button>
+            <ShoppingBag className="h-5 w-5" />
+            <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-[10px] flex items-center justify-center">
+              {totalItemsCount}
+            </span>
+          </button>
 
-          {/* User Account / Login Button */}
+          {/* Botão sólido Entrar com fundo laranja e cantos levemente arredondados */}
           {isAuthenticated && user ? (
             <div className="relative">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 rounded-full border border-border bg-surface-elevated p-1 pr-3 hover:border-amber-500/50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                className="flex items-center gap-2 rounded-md border border-[#282522] bg-[#1E1C1A] px-2.5 py-1.5 hover:border-[#D98A53] transition-colors focus:outline-none focus:ring-1 focus:ring-[#D98A53]"
                 aria-label="Menu do usuário"
                 aria-expanded={isUserMenuOpen}
               >
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="h-8 w-8 rounded-full object-cover border border-amber-500/30"
+                  className="h-6 w-6 rounded-full object-cover border border-[#D98A53]/40"
                 />
-                <span className="text-xs font-semibold text-stone-200 hidden sm:inline max-w-[100px] truncate">
+                <span className="font-mono text-xs font-semibold text-[#F3EFEA] hidden sm:inline max-w-[100px] truncate">
                   {user.name}
                 </span>
               </button>
@@ -145,15 +147,13 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
               )}
             </div>
           ) : (
-            <Button
-              variant="default"
-              size="sm"
+            <button
               onClick={onOpenAuth}
-              className="font-bold gap-2 text-xs shadow-amber-500/20"
+              className="bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-mono font-bold text-xs px-4 py-2 rounded-md transition-colors shadow-sm"
             >
-              <User className="h-4 w-4" />
-              <span>Entrar / Cadastrar</span>
-            </Button>
+              <span>Entrar</span>
+              <span className="sr-only"> / Cadastrar</span>
+            </button>
           )}
 
           {/* Mobile menu trigger */}

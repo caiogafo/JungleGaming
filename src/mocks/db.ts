@@ -92,6 +92,12 @@ export const INITIAL_NFTS: NFT[] = [
     isFeatured: true,
     createdAt: '2026-09-29T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Acessório', value: 'Óculos Redondos', rarityPercentage: 8 },
+      { traitType: 'Vestuário', value: 'Jaqueta Bomber Esmeralda', rarityPercentage: 12 },
+      { traitType: 'Joia', value: 'Pingente de Ouro', rarityPercentage: 5 },
+      { traitType: 'Raridade', value: 'Lendário', rarityPercentage: 3 },
+    ],
   },
   {
     id: 'nft_2',
@@ -125,6 +131,12 @@ export const INITIAL_NFTS: NFT[] = [
     isFeatured: true,
     createdAt: '2026-09-28T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Chapéu', value: 'Bucket Hat Verde Oliva', rarityPercentage: 14 },
+      { traitType: 'Vestuário', value: 'Moletom Roxo Royal', rarityPercentage: 18 },
+      { traitType: 'Expressão', value: 'Sábio e Sereno', rarityPercentage: 22 },
+      { traitType: 'Raridade', value: 'Épico', rarityPercentage: 15 },
+    ],
   },
   {
     id: 'nft_3',
@@ -159,6 +171,12 @@ export const INITIAL_NFTS: NFT[] = [
     isFeatured: true,
     createdAt: '2026-09-27T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Vestuário', value: 'Paletó Linho Branco', rarityPercentage: 10 },
+      { traitType: 'Camisa', value: 'Gola Alta Verde', rarityPercentage: 16 },
+      { traitType: 'Acessório', value: 'Argola Dourada', rarityPercentage: 9 },
+      { traitType: 'Raridade', value: 'Raro', rarityPercentage: 20 },
+    ],
   },
   {
     id: 'nft_4',
@@ -188,6 +206,11 @@ export const INITIAL_NFTS: NFT[] = [
     isFeatured: true,
     createdAt: '2026-09-26T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Traje', value: 'Casaco Espacial Roxo', rarityPercentage: 15 },
+      { traitType: 'Tecnologia', value: 'Visor Estelar', rarityPercentage: 7 },
+      { traitType: 'Raridade', value: 'Épico', rarityPercentage: 12 },
+    ],
   },
   {
     id: 'nft_5',
@@ -205,7 +228,7 @@ export const INITIAL_NFTS: NFT[] = [
     rarity: 'Raro',
     category: 'Punks',
     editions: [
-      { id: 'ed_5_std', name: 'Nomad Edition', maxSupply: 150, availableSupply: 25, priceEth: '1.390000' },
+      { id: 'ed_5_std', name: '1/1', maxSupply: 150, availableSupply: 25, priceEth: '1.390000' },
     ],
     selectedEditionId: 'ed_5_std',
     basePriceEth: '1.390000',
@@ -216,6 +239,11 @@ export const INITIAL_NFTS: NFT[] = [
     likesCount: 142,
     createdAt: '2026-09-25T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Chapéu', value: 'Chapéu Safari', rarityPercentage: 18 },
+      { traitType: 'Vestuário', value: 'Moletom Violeta', rarityPercentage: 20 },
+      { traitType: 'Raridade', value: 'Raro', rarityPercentage: 25 },
+    ],
   },
   {
     id: 'nft_6',
@@ -233,7 +261,7 @@ export const INITIAL_NFTS: NFT[] = [
     rarity: 'Lendário',
     category: 'Apes',
     editions: [
-      { id: 'ed_6_std', name: 'Baron Edition', maxSupply: 50, availableSupply: 5, priceEth: '1.790000' },
+      { id: 'ed_6_std', name: '1/10', maxSupply: 50, availableSupply: 5, priceEth: '1.790000' },
     ],
     selectedEditionId: 'ed_6_std',
     basePriceEth: '1.790000',
@@ -244,6 +272,11 @@ export const INITIAL_NFTS: NFT[] = [
     likesCount: 290,
     createdAt: '2026-09-24T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Vestuário', value: 'Fato Marfim Aristocrata', rarityPercentage: 6 },
+      { traitType: 'Camisa', value: 'Malha Negra Sob Medida', rarityPercentage: 14 },
+      { traitType: 'Raridade', value: 'Lendário', rarityPercentage: 4 },
+    ],
   },
   {
     id: 'nft_7',
@@ -261,7 +294,7 @@ export const INITIAL_NFTS: NFT[] = [
     rarity: 'Épico',
     category: 'Metaverse',
     editions: [
-      { id: 'ed_7_std', name: 'Beat Edition', maxSupply: 120, availableSupply: 31, priceEth: '0.990000' },
+      { id: 'ed_7_std', name: '1/50', maxSupply: 120, availableSupply: 31, priceEth: '0.990000' },
     ],
     selectedEditionId: 'ed_7_std',
     basePriceEth: '0.990000',
@@ -272,6 +305,12 @@ export const INITIAL_NFTS: NFT[] = [
     likesCount: 204,
     createdAt: '2026-09-23T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Áudio', value: 'Headphones DJ Master', rarityPercentage: 9 },
+      { traitType: 'Pelagem', value: 'Ouro Radiante', rarityPercentage: 11 },
+      { traitType: 'Vestuário', value: 'Jaqueta Amarela Bomber', rarityPercentage: 15 },
+      { traitType: 'Raridade', value: 'Épico', rarityPercentage: 10 },
+    ],
   },
   {
     id: 'nft_8',
@@ -300,6 +339,11 @@ export const INITIAL_NFTS: NFT[] = [
     likesCount: 150,
     createdAt: '2026-09-22T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Áudio', value: 'Headphones Monitor Studio', rarityPercentage: 13 },
+      { traitType: 'Vestuário', value: 'Jaqueta Bomber Creme', rarityPercentage: 17 },
+      { traitType: 'Raridade', value: 'Raro', rarityPercentage: 22 },
+    ],
   },
   {
     id: 'nft_9',
@@ -328,6 +372,11 @@ export const INITIAL_NFTS: NFT[] = [
     likesCount: 112,
     createdAt: '2026-09-21T12:00:00Z',
     version: 1,
+    attributes: [
+      { traitType: 'Áudio', value: 'Headphones Esmeralda', rarityPercentage: 25 },
+      { traitType: 'Frequência', value: 'Ondas Hertzianas', rarityPercentage: 22 },
+      { traitType: 'Raridade', value: 'Comum', rarityPercentage: 50 },
+    ],
   },
 ]
 
@@ -424,7 +473,48 @@ function getInitialDb(): MockDatabase {
     },
     userCarts: {
       user_1: [],
-      guest: [],
+      guest: [
+        {
+          id: 'item_init_1',
+          nftId: 'nft_1',
+          editionId: 'ed_1_50',
+          nft: INITIAL_NFTS[0],
+          edition: INITIAL_NFTS[0].editions[2],
+          quantity: 1,
+          unitPriceEth: '1.190000',
+          initialPriceEth: '1.190000',
+        },
+        {
+          id: 'item_init_2',
+          nftId: 'nft_5',
+          editionId: 'ed_5_std',
+          nft: INITIAL_NFTS[4],
+          edition: INITIAL_NFTS[4].editions[0],
+          quantity: 1,
+          unitPriceEth: '1.390000',
+          initialPriceEth: '1.390000',
+        },
+        {
+          id: 'item_init_3',
+          nftId: 'nft_6',
+          editionId: 'ed_6_std',
+          nft: INITIAL_NFTS[5],
+          edition: INITIAL_NFTS[5].editions[0],
+          quantity: 2,
+          unitPriceEth: '1.790000',
+          initialPriceEth: '1.790000',
+        },
+        {
+          id: 'item_init_4',
+          nftId: 'nft_7',
+          editionId: 'ed_7_std',
+          nft: INITIAL_NFTS[6],
+          edition: INITIAL_NFTS[6].editions[0],
+          quantity: 2,
+          unitPriceEth: '0.990000',
+          initialPriceEth: '0.990000',
+        },
+      ],
     },
     userWallets: JSON.parse(JSON.stringify(INITIAL_WALLETS)),
     orders: [],
@@ -461,7 +551,14 @@ class MockDbService {
           userFavorites: parsed.userFavorites || fresh.userFavorites,
           sessions: parsed.sessions || fresh.sessions,
           users: Array.isArray(parsed.users) ? parsed.users : fresh.users,
-          nfts: Array.isArray(parsed.nfts) ? parsed.nfts : fresh.nfts,
+          nfts: fresh.nfts.map((freshNft) => {
+            const stored = Array.isArray(parsed.nfts)
+              ? parsed.nfts.find((n: any) => n.id === freshNft.id)
+              : null
+            return stored
+              ? { ...freshNft, ...stored, attributes: freshNft.attributes }
+              : freshNft
+          }),
         }
       }
     } catch {

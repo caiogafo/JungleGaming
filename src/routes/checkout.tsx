@@ -6,7 +6,7 @@ import { useOrders } from '../hooks/useOrders'
 import { useAuth } from '../hooks/useAuth'
 import { useWallets } from '../hooks/useWallets'
 import { formatEth } from '../lib/eth'
-import { Check, ChevronDown, ShoppingBag, AlertCircle } from 'lucide-react'
+import { Check, ChevronDown, ShoppingBag, AlertCircle, ChevronLeft, MoreVertical, Wallet } from 'lucide-react'
 
 export const checkoutRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -171,9 +171,299 @@ function CheckoutPage() {
     }
   }
 
+  // Estados específicos para seleção rápida no Mobile
+  const [selectedMobileWallet, setSelectedMobileWallet] = useState<'reserva' | 'principal'>('reserva')
+  const [selectedMobileProvider, setSelectedMobileProvider] = useState<'walletconnect' | 'metamask' | 'coinbase'>('coinbase')
+  const [mobileError, setMobileError] = useState<string | null>(null)
+
+  const handleConfirmOrderMobile = async () => {
+    setMobileError(null)
+    try {
+      const chosenWallet =
+        selectedMobileProvider === 'coinbase'
+          ? 'Coinbase Wallet'
+          : selectedMobileProvider === 'metamask'
+            ? 'MetaMask'
+            : 'WalletConnect'
+
+      const chosenAddress =
+        selectedMobileWallet === 'reserva'
+          ? 'nova.kurio.eth'
+          : (walletAddress || '0xA91FE82C')
+
+      const chosenNetwork =
+        selectedMobileWallet === 'reserva'
+          ? 'Polygon'
+          : 'Ethereum'
+
+      const order = await createOrder({
+        idempotencyKey: `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+        walletId: selectedMobileWallet === 'reserva' ? 'wallet_reserva' : 'wallet_principal',
+        walletName: chosenWallet,
+        walletAddress: chosenAddress,
+        network: chosenNetwork as any,
+        couponCode: couponCode || undefined,
+        customerName: displayName.trim() || user?.name || user?.username || 'Colecionador Kurio',
+        customerEmail: email.trim() || user?.email || 'contato@kurio.com',
+        username: username.trim() || user?.username || '@colecionador',
+        notes: notes.trim(),
+      })
+
+      try {
+        sessionStorage.removeItem('jungle_checkout_draft')
+      } catch {}
+
+      navigate({ to: '/receipt/$id', params: { id: order.id } })
+    } catch (err: any) {
+      setMobileError(err.message || 'Falha ao processar pagamento.')
+    }
+  }
+
   return (
-    <div className="max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-8 font-mono text-xs text-[#9E968F]">
-      {/* 1. Breadcrumb: Início / Mercado / Pagamento */}
+    <>
+      {/* =========================================================================
+          1. VIEW MOBILE (PAGAMENTO FIGMA MOCKUP) - <= 768px
+          ========================================================================= */}
+      <div className="block md:hidden min-h-screen px-4 pt-4 pb-12 font-mono text-xs text-[#9E968F] bg-[#140E0C] space-y-5">
+        {/* Top Bar Mobile com botão Voltar (<) e Título Pagamento com carteira */}
+        <div className="flex items-center justify-between relative pb-1">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="h-10 w-10 rounded-full bg-[#241C19] border border-[#37271c] flex items-center justify-center text-[#F3EFEA] hover:text-[#D98A53] transition-colors shadow-md active:scale-95 shrink-0 z-10"
+            aria-label="Voltar"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          <h1 className="text-sm sm:text-base font-bold text-[#F3EFEA] tracking-wider text-center absolute inset-x-0 pointer-events-none">
+            Pagamento com carteira
+          </h1>
+
+          <div className="w-10 h-10 shrink-0" aria-hidden="true" />
+        </div>
+
+        {mobileError && (
+          <div className="rounded-xl border border-red-500/50 bg-red-950/40 p-3 text-xs text-red-300 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+            <p>{mobileError}</p>
+          </div>
+        )}
+
+        {/* Seção 1: Carteira conectada */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold text-[#F3EFEA] tracking-wide">
+              Carteira conectada
+            </h2>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedMobileWallet((prev) => (prev === 'reserva' ? 'principal' : 'reserva'))
+              }}
+              className="text-xs text-[#D98A53] hover:text-[#E59864] transition-colors"
+            >
+              Trocar carteira
+            </button>
+          </div>
+
+          <div className="space-y-2.5">
+            {/* Card 1: Reserva */}
+            <div
+              onClick={() => setSelectedMobileWallet('reserva')}
+              className={`rounded-2xl p-4 border transition-all cursor-pointer flex items-center justify-between ${
+                selectedMobileWallet === 'reserva'
+                  ? 'bg-[#261C18] border-[#37271c]/90 shadow-md ring-1 ring-[#D98A53]/30'
+                  : 'bg-[#231A17] border-[#37271c]/60 opacity-80'
+              }`}
+            >
+              <div className="flex items-start gap-3.5">
+                {/* Radio Circle */}
+                <div className="mt-0.5 shrink-0">
+                  {selectedMobileWallet === 'reserva' ? (
+                    <div className="w-5 h-5 rounded-full border-2 border-[#D98A53] flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#D98A53]" />
+                    </div>
+                  ) : (
+                    <div className="w-5 h-5 rounded-full border-2 border-[#4A382D]" />
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-[#F3EFEA]">Reserva</h3>
+                  <p className="text-xs text-[#9E968F]">nova.kurio.eth</p>
+                  <p className="text-xs text-[#9E968F]/80">Rede Polygon</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate({ to: '/profile', search: { tab: 'wallets' } })
+                }}
+                className="p-1.5 text-[#9E968F] hover:text-[#F3EFEA] transition-colors"
+                aria-label="Opções da carteira"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Card 2: Principal */}
+            <div
+              onClick={() => setSelectedMobileWallet('principal')}
+              className={`rounded-2xl p-4 border transition-all cursor-pointer flex items-center justify-between ${
+                selectedMobileWallet === 'principal'
+                  ? 'bg-[#261C18] border-[#37271c]/90 shadow-md ring-1 ring-[#D98A53]/30'
+                  : 'bg-[#231A17] border-[#37271c]/60 opacity-80'
+              }`}
+            >
+              <div className="flex items-start gap-3.5">
+                {/* Radio Circle */}
+                <div className="mt-0.5 shrink-0">
+                  {selectedMobileWallet === 'principal' ? (
+                    <div className="w-5 h-5 rounded-full border-2 border-[#D98A53] flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#D98A53]" />
+                    </div>
+                  ) : (
+                    <div className="w-5 h-5 rounded-full border-2 border-[#4A382D]" />
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-[#F3EFEA]">Principal</h3>
+                  <p className="text-xs text-[#9E968F]">0xA91F…E82C</p>
+                  <p className="text-xs text-[#9E968F]/80">Rede principal Ethereum</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate({ to: '/profile', search: { tab: 'wallets' } })
+                }}
+                className="p-1.5 text-[#9E968F] hover:text-[#F3EFEA] transition-colors"
+                aria-label="Opções da carteira"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Seção 2: Carteira e rede */}
+        <div className="space-y-2.5 pt-2">
+          <h2 className="text-xs font-bold text-[#F3EFEA] tracking-wide">
+            Carteira e rede
+          </h2>
+
+          <div className="space-y-2.5">
+            {/* Provedor 1: WalletConnect */}
+            <div
+              onClick={() => setSelectedMobileProvider('walletconnect')}
+              className={`rounded-2xl p-3.5 border transition-all cursor-pointer flex items-center justify-between shadow-md active:scale-98 ${
+                selectedMobileProvider === 'walletconnect'
+                  ? 'bg-[#261C18] border-[#37271c]/90 ring-1 ring-[#D98A53]/30'
+                  : 'bg-[#231A17] border-[#37271c]/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-[#2E201B] border border-[#3D2E27] flex items-center justify-center text-[#D98A53] font-mono font-bold text-xs shrink-0">
+                  W
+                </div>
+                <span className="text-xs font-mono text-[#F3EFEA]">WalletConnect</span>
+              </div>
+
+              {selectedMobileProvider === 'walletconnect' ? (
+                <div className="w-5 h-5 rounded-full border-2 border-[#D98A53] flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#D98A53]" />
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded-full border-2 border-[#4A382D]" />
+              )}
+            </div>
+
+            {/* Provedor 2: MetaMask */}
+            <div
+              onClick={() => setSelectedMobileProvider('metamask')}
+              className={`rounded-2xl p-3.5 border transition-all cursor-pointer flex items-center justify-between shadow-md active:scale-98 ${
+                selectedMobileProvider === 'metamask'
+                  ? 'bg-[#261C18] border-[#37271c]/90 ring-1 ring-[#D98A53]/30'
+                  : 'bg-[#231A17] border-[#37271c]/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-[#2E201B] border border-[#3D2E27] flex items-center justify-center text-[#D98A53] font-mono font-bold text-xs shrink-0">
+                  M
+                </div>
+                <span className="text-xs font-mono text-[#F3EFEA]">MetaMask</span>
+              </div>
+
+              {selectedMobileProvider === 'metamask' ? (
+                <div className="w-5 h-5 rounded-full border-2 border-[#D98A53] flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#D98A53]" />
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded-full border-2 border-[#4A382D]" />
+              )}
+            </div>
+
+            {/* Provedor 3: Coinbase Wallet */}
+            <div
+              onClick={() => setSelectedMobileProvider('coinbase')}
+              className={`rounded-2xl p-3.5 border transition-all cursor-pointer flex items-center justify-between shadow-md active:scale-98 ${
+                selectedMobileProvider === 'coinbase'
+                  ? 'bg-[#261C18] border-[#37271c]/90 ring-1 ring-[#D98A53]/30'
+                  : 'bg-[#231A17] border-[#37271c]/60'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-[#2E201B] border border-[#3D2E27] flex items-center justify-center text-[#D98A53] shrink-0">
+                  <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="16" cy="12" r="1.5" fill="currentColor" />
+                    <path d="M3 10h18" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                </div>
+                <span className="text-xs font-mono text-[#F3EFEA]">Coinbase Wallet</span>
+              </div>
+
+              {selectedMobileProvider === 'coinbase' ? (
+                <div className="w-5 h-5 rounded-full border-2 border-[#D98A53] flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#D98A53]" />
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded-full border-2 border-[#4A382D]" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Linha Total */}
+        <div className="flex items-center justify-end gap-3 pt-3 pb-2 font-mono">
+          <span className="text-sm font-bold text-[#F3EFEA]">Total:</span>
+          <span className="text-base sm:text-lg font-bold text-[#D98A53]">
+            {formatEth(quote?.totalEth || '8.936000')}
+          </span>
+        </div>
+
+        {/* Botão de Ação: Confirmar compra */}
+        <button
+          type="button"
+          onClick={handleConfirmOrderMobile}
+          disabled={isCreatingOrder}
+          className="w-full h-12 bg-[#C48247] hover:bg-[#D98A53] text-[#151312] font-mono font-bold text-xs uppercase rounded-full transition-all shadow-lg active:scale-98 flex items-center justify-center tracking-wider disabled:opacity-50 mt-4"
+        >
+          {isCreatingOrder ? 'Confirmando transação...' : 'Confirmar compra'}
+        </button>
+      </div>
+
+      {/* =========================================================================
+          2. VIEW DESKTOP (Telas >= 768px - inalterada)
+          ========================================================================= */}
+      <div className="hidden md:block max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-8 font-mono text-xs text-[#9E968F]">
+        {/* 1. Breadcrumb: Início / Mercado / Pagamento */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#9E968F]">
         <Link to="/" className="hover:text-[#F3EFEA] transition-colors">
           Início
@@ -725,6 +1015,7 @@ function CheckoutPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

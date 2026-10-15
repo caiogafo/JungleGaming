@@ -40,7 +40,7 @@ export const profileHandlers = [
     }
 
     const body = (await request.json()) as UpdateProfilePayload
-    const { name, username, bio, avatar } = body
+    const { name, username, bio, avatar, email, walletNickname, ensName, ensSuffix } = body
 
     if (!name || !username) {
       return HttpResponse.json({ message: 'Nome e nome de usuário são obrigatórios' }, { status: 400 })
@@ -52,9 +52,13 @@ export const profileHandlers = [
       const user = d.users.find((u) => u.id === userId)
       if (user) {
         user.name = name
-        user.username = username
+        user.username = username.replace(/^@/, '')
+        if (email !== undefined) user.email = email
         if (bio !== undefined) user.bio = bio
         if (avatar !== undefined) user.avatar = avatar
+        if (walletNickname !== undefined) user.walletNickname = walletNickname
+        if (ensName !== undefined) user.ensName = ensName
+        if (ensSuffix !== undefined) user.ensSuffix = ensSuffix
         updatedUser = user
 
         // Update active session user as well

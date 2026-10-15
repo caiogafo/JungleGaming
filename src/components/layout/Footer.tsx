@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useRouterState } from '@tanstack/react-router'
 import { CheckCircle2 } from 'lucide-react'
 
 function FacebookIcon() {
@@ -42,8 +43,13 @@ function YoutubeIcon() {
 }
 
 export function Footer() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
+
+  if (pathname === '/login' || pathname === '/register') {
+    return null
+  }
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,9 +62,12 @@ export function Footer() {
   }
 
   return (
-    <footer className="w-full text-[#9E968F] font-mono mt-16 pb-12 px-4 sm:px-6 lg:px-0" aria-label="Rodapé do site">
+    <footer
+      className="w-full text-[#9E968F] font-mono mt-10 md:mt-16 pb-28 md:pb-12 px-4 sm:px-6 lg:px-0"
+      aria-label="Rodapé do site"
+    >
       {/* Card Retangular Bem Demarcado de 960px conforme Figma */}
-      <div className="max-w-[960px] mx-auto bg-[#291C19] border border-[#37271c] shadow-2xl">
+      <div className="max-w-[960px] mx-auto bg-[#291C19] border border-[#37271c] shadow-2xl rounded-2xl md:rounded-none overflow-hidden">
         {/* 1. Faixa Superior (W, C, D, Newsletter) com divisórias verticais entre colunas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 lg:divide-x divide-[#37271c]">
           {/* Coluna 1: W */}
@@ -210,7 +219,7 @@ export function Footer() {
             </div>
 
             {/* Coluna 4: Redes sociais e Carteiras compatíveis */}
-            <div className="space-y-4">
+            <div className="col-span-2 md:col-span-1 space-y-4 pt-4 md:pt-0 border-t border-[#37271c] md:border-0">
               <h5 className="font-bold text-[#F3EFEA] tracking-wider">
                 Redes sociais
               </h5>

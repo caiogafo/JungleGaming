@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
-import { Search, ShoppingBag, Heart, User, LogOut, Wallet, Menu, X, ShieldCheck } from 'lucide-react'
+import { Search, ShoppingBag, Menu, X } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { useCart } from '../../hooks/useCart'
 import { Button } from '../ui/button'
@@ -14,7 +14,6 @@ export function Navbar({ onOpenAuth }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth()
   const { totalItemsCount } = useCart()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
 
@@ -24,6 +23,16 @@ export function Navbar({ onOpenAuth }: NavbarProps) {
     pathname === '/mercado' ||
     pathname === '/cart' ||
     pathname === '/checkout'
+
+  const isMobileCustomRoute =
+    pathname === '/' ||
+    pathname.startsWith('/nft') ||
+    pathname === '/cart' ||
+    pathname === '/checkout' ||
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname.startsWith('/receipt') ||
+    pathname === '/profile'
 
   const lastSelectedNftId =
     typeof window !== 'undefined'
@@ -37,7 +46,11 @@ export function Navbar({ onOpenAuth }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#37271c] bg-[#1B1512]/95 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-40 w-full border-b border-[#37271c] bg-[#1B1512]/95 backdrop-blur-md ${
+        isMobileCustomRoute ? 'hidden md:block' : ''
+      }`}
+    >
       <div className="max-w-[960px] mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-0">
         {/* Esquerda: Logótipo KURIO em letras maiúsculas e fonte monospace */}
         <Link
@@ -111,63 +124,23 @@ export function Navbar({ onOpenAuth }: NavbarProps) {
             </span>
           </Link>
 
-          {/* Botão sólido Entrar com fundo laranja e cantos levemente arredondados */}
+          {/* Botão sólido Entrar ou Perfil do Colecionador */}
           {isAuthenticated && user ? (
             <div className="relative">
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              <Link
+                to="/profile"
                 className="flex items-center gap-2 rounded-md border border-[#282522] bg-[#1E1C1A] px-2.5 py-1.5 hover:border-[#D98A53] transition-colors focus:outline-none focus:ring-1 focus:ring-[#D98A53]"
-                aria-label="Menu do usuário"
-                aria-expanded={isUserMenuOpen}
+                aria-label="Perfil do colecionador"
               >
                 <img
-                  src={user.avatar}
+                  src={user.avatar || '/assets/avatars/collector_1.jpg'}
                   alt={user.name}
                   className="h-6 w-6 rounded-full object-cover border border-[#D98A53]/40"
                 />
                 <span className="font-mono text-xs font-semibold text-[#F3EFEA] inline-block max-w-[80px] sm:max-w-[120px] truncate">
                   {user.name}
                 </span>
-              </button>
-
-              {/* User Dropdown */}
-              {isUserMenuOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-surface-elevated p-2 shadow-2xl z-50 animate-in fade-in-50 zoom-in-95"
-                  role="menu"
-                >
-                  <div className="px-3 py-2 border-b border-border/60 mb-1">
-                    <p className="text-xs font-semibold text-white truncate">{user.name}</p>
-                    <p className="text-[11px] text-stone-400 truncate font-mono">{user.email}</p>
-                  </div>
-                  <Link
-                    to="/profile"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs text-stone-200 hover:bg-surface-hover rounded-lg transition-colors"
-                    role="menuitem"
-                  >
-                    <User className="h-4 w-4 text-amber-400" />
-                    Dados do Colecionador
-                  </Link>
-                  <Link
-                    to="/wallets"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs text-stone-200 hover:bg-surface-hover rounded-lg transition-colors"
-                    role="menuitem"
-                  >
-                    <Wallet className="h-4 w-4 text-amber-400" />
-                    Minhas Carteiras
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition-colors mt-1"
-                    role="menuitem"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Encerrar Sessão
-                  </button>
-                </div>
-              )}
+              </Link>
             </div>
           ) : (
             <button

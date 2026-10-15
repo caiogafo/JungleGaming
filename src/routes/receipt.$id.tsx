@@ -5,7 +5,7 @@ import { rootRoute } from './__root'
 import { useOrderDetail } from '../hooks/useOrders'
 import { formatEth } from '../lib/eth'
 import { realtimeSocket } from '../socket/socketClient'
-import { X, ExternalLink, Check, Copy, AlertCircle, RefreshCw } from 'lucide-react'
+import { X, ExternalLink, Check, Copy, AlertCircle, RefreshCw, ChevronLeft } from 'lucide-react'
 
 export const receiptRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -231,186 +231,231 @@ function ReceiptPage() {
   }
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-8 font-mono text-xs text-[#9E968F]">
-      {/* Modal Container */}
-      <div className="w-full max-w-[560px] bg-[#201713] border border-[#3D291F] border-b-4 border-b-[#D98A53] rounded-2xl p-6 sm:p-8 shadow-2xl relative space-y-6 animate-in zoom-in-95 duration-200">
-        {/* Close Button X (top right) */}
+    <div className="min-h-screen bg-[#140E0C] font-mono text-xs text-[#9E968F] flex flex-col justify-between">
+      {/* Mobile Top Bar (<= 768px) */}
+      <div className="md:hidden flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#2D201A] bg-[#140E0C] sticky top-0 z-30">
         <button
-          onClick={() => navigate({ to: '/mercado' })}
-          className="absolute top-5 right-5 text-[#9E968F] hover:text-[#F3EFEA] transition-colors p-1"
+          type="button"
+          onClick={() => navigate({ to: '/' })}
+          className="h-9 w-9 rounded-full bg-[#18110E] border border-[#2D201A] flex items-center justify-center text-[#F3EFEA] hover:text-[#D98A53] hover:border-[#D98A53]/50 transition-colors cursor-pointer"
+          aria-label="Voltar ao início"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <h1 className="text-sm font-bold text-[#F3EFEA] tracking-wide">
+          Comprovante de Compra
+        </h1>
+        <button
+          type="button"
+          onClick={() => navigate({ to: '/' })}
+          className="h-9 w-9 rounded-full bg-[#18110E] border border-[#2D201A] flex items-center justify-center text-[#9E968F] hover:text-[#F3EFEA] transition-colors cursor-pointer"
           aria-label="Fechar"
         >
           <X className="h-4 w-4" />
         </button>
+      </div>
 
-        {/* 1. Top Section (Status Icon + Subtitle) */}
-        <div className="text-center space-y-2 pt-1">
-          {isPending && (
-            <>
-              <PendingClockIcon />
-              <p className="text-xs sm:text-sm font-medium text-[#D98A53]">
-                Processando transação na rede...
-              </p>
-            </>
-          )}
+      <div className="flex-1 flex items-center justify-center px-4 py-4 sm:py-8">
+        {/* Modal / Container */}
+        <div className="w-full max-w-[560px] bg-[#18110E] border border-[#2D201A] border-b-4 border-b-[#D98A53] rounded-2xl p-5 sm:p-8 shadow-2xl relative space-y-6 animate-in zoom-in-95 duration-200">
+          {/* Close Button X (desktop only) */}
+          <button
+            onClick={() => navigate({ to: '/' })}
+            className="hidden md:block absolute top-5 right-5 text-[#9E968F] hover:text-[#F3EFEA] transition-colors p-1 cursor-pointer"
+            aria-label="Fechar"
+          >
+            <X className="h-4 w-4" />
+          </button>
 
-          {isConfirmed && (
-            <>
-              <ThankYouEnvelopeIcon />
-              <p className="text-xs sm:text-sm font-medium text-[#F3EFEA]">
-                Seus NFTs agora estão na sua carteira
-              </p>
-            </>
-          )}
+          {/* 1. Top Section (Status Icon + Subtitle) */}
+          <div className="text-center space-y-2 pt-1">
+            {isPending && (
+              <>
+                <PendingClockIcon />
+                <p className="text-xs sm:text-sm font-medium text-[#D98A53]">
+                  Processando transação na rede...
+                </p>
+              </>
+            )}
 
-          {isRejected && (
-            <>
-              <RejectedAlertIcon />
-              <p className="text-xs sm:text-sm font-medium text-[#E5484D]">
-                Transação Recusada ou Cancelada
-              </p>
-            </>
-          )}
-        </div>
+            {isConfirmed && (
+              <>
+                <ThankYouEnvelopeIcon />
+                <p className="text-xs sm:text-sm font-medium text-[#F3EFEA]">
+                  Seus NFTs agora estão na sua carteira
+                </p>
+              </>
+            )}
 
-        {/* 2. Horizontal Metadata Bar (4 Columns) */}
-        <div className="grid grid-cols-4 border-y border-[#37271c] py-3 text-left">
-          {/* ID da transação */}
-          <div className="pr-2 border-r border-[#37271c]">
-            <span className="block text-[10px] text-[#9E968F]">ID da transação</span>
-            <span className="block text-xs font-bold text-[#F3EFEA] truncate">
-              {formatShortTxHash(order.transactionHash)}
-            </span>
+            {isRejected && (
+              <>
+                <RejectedAlertIcon />
+                <p className="text-xs sm:text-sm font-medium text-[#E5484D]">
+                  Transação Recusada ou Cancelada
+                </p>
+              </>
+            )}
           </div>
 
-          {/* Data */}
-          <div className="px-2 border-r border-[#37271c]">
-            <span className="block text-[10px] text-[#9E968F]">Data</span>
-            <span className="block text-xs font-bold text-[#F3EFEA]">
-              {formatOrderDate(order.createdAt)}
-            </span>
+          {/* 2. Metadata Bar: 2x2 grid on mobile, 4 columns on tablet/desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-0 sm:border-y sm:border-[#2D201A] py-2 sm:py-3 text-left">
+            {/* ID da transação */}
+            <div className="p-2 sm:p-0 sm:pr-2 sm:border-r sm:border-[#2D201A] bg-[#140E0C] sm:bg-transparent rounded-lg sm:rounded-none border sm:border-0 border-[#2D201A]">
+              <span className="block text-[10px] text-[#7A6C63]">ID da transação</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-xs font-bold text-[#F3EFEA] truncate">
+                  {formatShortTxHash(order.transactionHash)}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopyHash}
+                  className="text-[#7A6C63] hover:text-[#D98A53] transition-colors shrink-0"
+                  title="Copiar hash"
+                >
+                  {copiedHash ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Data */}
+            <div className="p-2 sm:p-0 sm:px-2 sm:border-r sm:border-[#2D201A] bg-[#140E0C] sm:bg-transparent rounded-lg sm:rounded-none border sm:border-0 border-[#2D201A]">
+              <span className="block text-[10px] text-[#7A6C63]">Data</span>
+              <span className="block text-xs font-bold text-[#F3EFEA] mt-0.5">
+                {formatOrderDate(order.createdAt)}
+              </span>
+            </div>
+
+            {/* Total */}
+            <div className="p-2 sm:p-0 sm:px-2 sm:border-r sm:border-[#2D201A] bg-[#140E0C] sm:bg-transparent rounded-lg sm:rounded-none border sm:border-0 border-[#2D201A]">
+              <span className="block text-[10px] text-[#7A6C63]">Total</span>
+              <span className="block text-xs font-bold text-[#D98A53] mt-0.5">
+                {formatEth(order.totalEth)}
+              </span>
+            </div>
+
+            {/* Carteira */}
+            <div className="p-2 sm:p-0 sm:pl-2 bg-[#140E0C] sm:bg-transparent rounded-lg sm:rounded-none border sm:border-0 border-[#2D201A]">
+              <span className="block text-[10px] text-[#7A6C63]">Carteira</span>
+              <span className="block text-xs font-bold text-[#F3EFEA] truncate mt-0.5">
+                {order.walletName || 'MetaMask'}
+              </span>
+            </div>
           </div>
 
-          {/* Total */}
-          <div className="px-2 border-r border-[#37271c]">
-            <span className="block text-[10px] text-[#9E968F]">Total</span>
-            <span className="block text-xs font-bold text-[#F3EFEA]">
-              {formatEth(order.totalEth)}
-            </span>
-          </div>
+          {/* 3. Detalhes da transação */}
+          <div className="space-y-3">
+            <h3 className="font-bold text-xs text-[#F3EFEA]">Detalhes da transação</h3>
 
-          {/* Carteira */}
-          <div className="pl-2">
-            <span className="block text-[10px] text-[#9E968F]">Carteira</span>
-            <span className="block text-xs font-bold text-[#F3EFEA] truncate">
-              {order.walletName || 'MetaMask'}
-            </span>
-          </div>
-        </div>
+            {/* Table Header */}
+            <div className="grid grid-cols-12 text-[10px] font-semibold text-[#7A6C63] pb-1 border-b border-[#2D201A]">
+              <span className="col-span-6">NFTs</span>
+              <span className="col-span-3 text-center">Edições</span>
+              <span className="col-span-3 text-right">Subtotal</span>
+            </div>
 
-        {/* 3. Detalhes da transação Table */}
-        <div className="space-y-3">
-          <h3 className="font-bold text-xs text-[#F3EFEA]">Detalhes da transação</h3>
+            {/* Items List */}
+            <div className="space-y-3 pt-1">
+              {order.items.map((item, idx) => (
+                <div key={idx} className="grid grid-cols-12 items-center text-xs">
+                  {/* NFT thumbnail + name + token id */}
+                  <div className="col-span-6 flex items-center gap-2.5 min-w-0 pr-2">
+                    <img
+                      src={item.nftImage}
+                      alt={item.nftName}
+                      className="h-10 w-10 rounded-lg object-cover bg-[#140E0C] border border-[#2D201A] shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-bold text-[#F3EFEA] truncate">{item.nftName}</p>
+                      <p className="text-[10px] text-[#7A6C63]">ID do token: #{item.tokenId || '0042'}</p>
+                    </div>
+                  </div>
 
-          {/* Table Header */}
-          <div className="grid grid-cols-12 text-[10px] font-semibold text-[#9E968F] pb-1 border-b border-[#37271c]/60">
-            <span className="col-span-6">NFTs</span>
-            <span className="col-span-3 text-center">Edições</span>
-            <span className="col-span-3 text-right">Subtotal</span>
-          </div>
+                  {/* Edições (quantity) */}
+                  <div className="col-span-3 text-center text-[#9E968F]">
+                    (x {item.quantity})
+                  </div>
 
-          {/* Items List */}
-          <div className="space-y-3 pt-1">
-            {order.items.map((item, idx) => (
-              <div key={idx} className="grid grid-cols-12 items-center text-xs">
-                {/* NFT thumbnail + name + token id */}
-                <div className="col-span-6 flex items-center gap-2.5 min-w-0 pr-2">
-                  <img
-                    src={item.nftImage}
-                    alt={item.nftName}
-                    className="h-10 w-10 rounded-lg object-cover bg-[#1B1512] border border-[#37271c] shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <p className="font-bold text-[#F3EFEA] truncate">{item.nftName}</p>
-                    <p className="text-[10px] text-[#9E968F]">ID do token: #{item.tokenId || '0042'}</p>
+                  {/* Subtotal */}
+                  <div className="col-span-3 text-right font-bold text-[#D98A53]">
+                    {formatEth(item.subtotalEth)}
                   </div>
                 </div>
-
-                {/* Edições (quantity) */}
-                <div className="col-span-3 text-center text-[#9E968F]">
-                  (x {item.quantity})
-                </div>
-
-                {/* Subtotal */}
-                <div className="col-span-3 text-right font-bold text-[#D98A53]">
-                  {formatEth(item.subtotalEth)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 4. Financial Summary (Taxa de rede & Total) */}
-        <div className="space-y-1.5 pt-2 border-t border-[#37271c] text-xs">
-          <div className="flex justify-between items-center text-[#9E968F]">
-            <span className="text-right flex-1 pr-6">Taxa de rede</span>
-            <span className="text-[#F3EFEA] font-medium">{formatEth(order.networkFeeEth)}</span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-right flex-1 pr-6 text-[#F3EFEA] font-bold">Total</span>
-            <span className="text-sm font-bold text-[#D98A53]">{formatEth(order.totalEth)}</span>
-          </div>
-        </div>
-
-        {/* 5. Informative Note */}
-        <div className="text-center text-[11px] text-[#9E968F] px-4 leading-relaxed">
-          {isPending && (
-            <p>
-              Aguardando confirmação na rede {order.network || 'Ethereum'}. Seus itens estão reservados enquanto os
-              blocos são validados (cerca de 2 a 3 segundos).
-            </p>
-          )}
-          {isConfirmed && (
-            <p>
-              Transação confirmada na {order.network || 'Ethereum'}. A propriedade foi transferida para sua carteira
-              conectada e registrada na rede.
-            </p>
-          )}
-          {isRejected && (
-            <p className="text-[#E5484D]">
-              {order.errorMessage ||
-                'Transação recusada pela rede blockchain ou saldo insuficiente. Seus itens continuam salvos no carrinho.'}
-            </p>
-          )}
-        </div>
-
-        {/* 6. Action Button */}
-        <div className="flex justify-center pt-1">
-          {isPending && (
-            <div className="inline-flex items-center gap-2 bg-[#291C19] border border-[#3D291F] text-[#D98A53] font-bold text-xs uppercase px-6 py-2.5 rounded-md">
-              <div className="h-3.5 w-3.5 border-2 border-[#D98A53] border-t-transparent rounded-full animate-spin" />
-              <span>Aguardando Confirmação...</span>
+              ))}
             </div>
-          )}
+          </div>
 
-          {isConfirmed && (
-            <button
-              onClick={() => setShowExplorerModal(true)}
-              className="inline-flex items-center justify-center bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold text-xs uppercase px-8 py-2.5 rounded-md transition-colors"
-            >
-              Ver no Etherscan
-            </button>
-          )}
+          {/* 4. Financial Summary (Taxa de rede & Total) */}
+          <div className="space-y-1.5 pt-2 border-t border-[#2D201A] text-xs">
+            <div className="flex justify-between items-center text-[#9E968F]">
+              <span className="text-right flex-1 pr-6">Taxa de rede</span>
+              <span className="text-[#F3EFEA] font-medium">{formatEth(order.networkFeeEth)}</span>
+            </div>
 
-          {isRejected && (
-            <Link
-              to="/checkout"
-              className="inline-flex items-center justify-center bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold text-xs uppercase px-8 py-2.5 rounded-md transition-colors"
-            >
-              Tentar Novamente
-            </Link>
-          )}
+            <div className="flex justify-between items-center">
+              <span className="text-right flex-1 pr-6 text-[#F3EFEA] font-bold">Total</span>
+              <span className="text-sm font-bold text-[#D98A53]">{formatEth(order.totalEth)}</span>
+            </div>
+          </div>
+
+          {/* 5. Informative Note */}
+          <div className="text-center text-[11px] text-[#9E968F] px-4 leading-relaxed">
+            {isPending && (
+              <p>
+                Aguardando confirmação na rede {order.network || 'Ethereum'}. Seus itens estão reservados enquanto os
+                blocos são validados (cerca de 2 a 3 segundos).
+              </p>
+            )}
+            {isConfirmed && (
+              <p>
+                Transação confirmada na rede {order.network || 'Ethereum'}. A propriedade foi transferida para sua carteira
+                conectada e registrada na blockchain.
+              </p>
+            )}
+            {isRejected && (
+              <p className="text-[#E5484D]">
+                {order.errorMessage ||
+                  'Transação recusada pela rede blockchain ou saldo insuficiente. Seus itens continuam salvos no carrinho.'}
+              </p>
+            )}
+          </div>
+
+          {/* 6. Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            {isConfirmed && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowExplorerModal(true)}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#D98A53] hover:bg-[#E59864] text-[#140E0C] font-bold text-xs uppercase px-6 py-3 rounded-lg transition-colors cursor-pointer"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>Ver no Etherscan</span>
+                </button>
+                <Link
+                  to="/profile"
+                  className="w-full sm:w-auto inline-flex items-center justify-center bg-[#1F1613] hover:bg-[#2A1D18] border border-[#2D201A] text-[#F3EFEA] font-bold text-xs uppercase px-6 py-3 rounded-lg transition-colors cursor-pointer text-center"
+                >
+                  Ver no Meu Perfil
+                </Link>
+              </>
+            )}
+
+            {isPending && (
+              <div className="inline-flex items-center gap-2 bg-[#291C19] border border-[#3D291F] text-[#D98A53] font-bold text-xs uppercase px-6 py-3 rounded-lg">
+                <div className="h-4 w-4 border-2 border-[#D98A53] border-t-transparent rounded-full animate-spin" />
+                <span>Aguardando Confirmação...</span>
+              </div>
+            )}
+
+            {isRejected && (
+              <Link
+                to="/checkout"
+                className="w-full sm:w-auto inline-flex items-center justify-center bg-[#D98A53] hover:bg-[#E59864] text-[#140E0C] font-bold text-xs uppercase px-8 py-3 rounded-lg transition-colors text-center"
+              >
+                Tentar Novamente
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 

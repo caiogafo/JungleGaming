@@ -16,6 +16,8 @@ import {
   AlertCircle,
   Mail,
   X,
+  ChevronLeft,
+  ShoppingCart,
 } from 'lucide-react'
 
 function LinkedinIcon({ className }: { className?: string }) {
@@ -140,15 +142,211 @@ function NftDetailPage() {
     .slice(0, 5)
 
   return (
-    <div className="max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-10 font-mono text-xs text-[#9E968F]">
-      {/* 1. Breadcrumb no topo: Início / Mercado */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#9E968F]">
-        <Link to="/" className="hover:text-[#F3EFEA] transition-colors">
-          Início
-        </Link>
-        <span>/</span>
-        <span className="text-[#F3EFEA]">Mercado</span>
-      </nav>
+    <>
+      {/* ========================================================= */}
+      {/* 1. VISUALIZAÇÃO MOBILE (Telas < 768px - idêntica ao Figma) */}
+      {/* ========================================================= */}
+      <div className="block md:hidden min-h-screen px-4 pt-3 pb-36 font-mono text-xs text-[#9E968F] bg-[#16110E]">
+        {/* Top Bar Mobile com botão Voltar (<) e Favoritar (♡) */}
+        <div className="flex items-center justify-between pb-3">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="h-10 w-10 rounded-full bg-[#2A201C] border border-[#3D2E27] flex items-center justify-center text-[#F3EFEA] hover:text-[#D98A53] transition-colors shadow-md active:scale-95"
+            aria-label="Voltar"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => toggleFavorite(nft.id)}
+            className={`h-10 w-10 rounded-full bg-[#2A201C] border border-[#3D2E27] flex items-center justify-center transition-colors shadow-md active:scale-95 ${
+              isFav ? 'text-red-500 border-red-500/50' : 'text-[#9E968F] hover:text-[#F3EFEA]'
+            }`}
+            aria-label={isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          >
+            <Heart className={`h-4 w-4 ${isFav ? 'fill-current text-red-500' : ''}`} />
+          </button>
+        </div>
+
+        {/* Card da Imagem Principal */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-[#241F1B] border border-[#37271c]/50 shadow-2xl mt-1">
+          <img
+            src={activeImage}
+            alt={nft.name}
+            className="h-full w-full object-cover"
+          />
+        </div>
+
+        {/* Informações da Obra */}
+        <div className="pt-5 space-y-4 font-mono">
+          {/* Título e Badge de Avaliação */}
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="text-xl font-bold text-[#F3EFEA] leading-tight">
+              {nft.name}
+            </h1>
+
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#D98A53]/50 bg-[#291C19] text-xs font-mono shrink-0">
+              <span className="text-[#D98A53] font-bold">★ 4.8</span>
+              <span className="text-[#9E968F]">(19)</span>
+            </div>
+          </div>
+
+          {/* Descrição */}
+          <p className="text-xs text-[#9E968F] leading-relaxed">
+            {nft.description ||
+              'Um colecionável digital 1/50 finalizado à mão da coleção Kurio Editions, verificado na Ethereum.'}
+          </p>
+
+          {/* Seletor de Edição */}
+          <div className="space-y-2 pt-1">
+            <h3 className="font-bold text-xs text-[#F3EFEA]">Edição:</h3>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {nft.editions && nft.editions.length > 0 ? (
+                nft.editions.map((ed) => {
+                  const isSelected = activeEdition?.id === ed.id
+                  return (
+                    <button
+                      key={ed.id}
+                      type="button"
+                      onClick={() => setSelectedEditionId(ed.id)}
+                      className={`px-3.5 py-1.5 rounded-full font-mono text-xs border transition-colors shrink-0 ${
+                        isSelected
+                          ? 'border-[#D98A53] text-[#D98A53] bg-[#D98A53]/15 font-bold'
+                          : 'border-[#37271c] text-[#9E968F] bg-[#1F1714] hover:border-[#D98A53]'
+                      }`}
+                    >
+                      {ed.name}
+                    </button>
+                  )
+                })
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="px-3.5 py-1.5 rounded-full font-mono text-xs border border-[#37271c] text-[#9E968F] bg-[#1F1714]"
+                  >
+                    1/10
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3.5 py-1.5 rounded-full font-mono text-xs border border-[#37271c] text-[#9E968F] bg-[#1F1714]"
+                  >
+                    1/10
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3.5 py-1.5 rounded-full font-mono text-xs border border-[#D98A53] text-[#D98A53] bg-[#D98A53]/15 font-bold"
+                  >
+                    1/50
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3.5 py-1.5 rounded-full font-mono text-xs border border-[#37271c] text-[#9E968F] bg-[#1F1714]"
+                  >
+                    ABERTA
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Metadados: ID, Coleção, Atributos */}
+          <div className="space-y-2 text-xs text-[#9E968F] pt-2">
+            <div>
+              <span>ID do token: </span>
+              <span className="text-[#F3EFEA]">#{nft.tokenId || '0042'}</span>
+            </div>
+            <div>
+              <span>Coleção: </span>
+              <span className="text-[#F3EFEA]">{nft.collection || 'Kurio Apes'}</span>
+            </div>
+            <div>
+              <span>Atributos: </span>
+              <span className="text-[#F3EFEA]">
+                {nft.attributes && nft.attributes.length > 0
+                  ? nft.attributes.map((a) => a.value).join(', ')
+                  : `${nft.category}, ${nft.rarity}`}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Notificação toast de item adicionado */}
+        {addedToast && (
+          <div className="fixed top-4 left-4 right-4 z-50 p-3 rounded-xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-mono text-xs text-center shadow-2xl animate-in fade-in">
+            ✓ Item adicionado ao carrinho com sucesso!
+          </div>
+        )}
+
+        {/* Barra Fixa de Ação no Rodapé (Mobile) */}
+        <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#191310]/95 backdrop-blur-md border-t border-[#37271c] px-5 py-3 space-y-3 shadow-2xl">
+          {/* Linha superior: Qtd e Preço */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 font-mono text-xs text-[#9E968F]">
+              <span>Qtd.</span>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                className="w-6 h-6 rounded-full bg-[#D98A53] text-[#151312] flex items-center justify-center font-bold text-xs hover:bg-[#E59864] disabled:opacity-40 transition-colors"
+                aria-label="Diminuir quantidade"
+              >
+                −
+              </button>
+              <span className="w-5 text-center font-bold text-[#F3EFEA] text-sm">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => q + 1)}
+                className="w-6 h-6 rounded-full bg-[#D98A53] text-[#151312] flex items-center justify-center font-bold text-xs hover:bg-[#E59864] transition-colors"
+                aria-label="Aumentar quantidade"
+              >
+                +
+              </button>
+            </div>
+
+            <div className="font-mono text-xl font-bold text-[#D98A53]">
+              {formatEth(activeEdition?.priceEth || nft.basePriceEth)}
+            </div>
+          </div>
+
+          {/* Linha inferior: Botão Comprar NFT e Carrinho */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              className="flex-1 h-12 bg-[#C48247] hover:bg-[#D98A53] text-[#151312] font-mono font-bold text-xs uppercase rounded-2xl transition-all shadow-lg active:scale-98 flex items-center justify-center tracking-wider"
+            >
+              Comprar NFT
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="h-12 w-12 rounded-2xl bg-[#2A201C] border border-[#3D2E27] flex items-center justify-center text-[#F3EFEA] hover:text-[#D98A53] transition-colors shrink-0 shadow-md active:scale-95"
+              aria-label="Adicionar ao carrinho"
+            >
+              <ShoppingCart className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 2. VISUALIZAÇÃO DESKTOP (Telas >= 768px)                   */}
+      {/* ========================================================= */}
+      <div className="hidden md:block max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-10 font-mono text-xs text-[#9E968F]">
+        {/* 1. Breadcrumb no topo: Início / Mercado */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#9E968F]">
+          <Link to="/" className="hover:text-[#F3EFEA] transition-colors">
+            Início
+          </Link>
+          <span>/</span>
+          <span className="text-[#F3EFEA]">Mercado</span>
+        </nav>
 
       {/* 2. Grid Principal: Galeria à esquerda e Informações à direita */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -340,7 +538,7 @@ function NftDetailPage() {
               <span className="text-[#F3EFEA]">
                 {nft.attributes && nft.attributes.length > 0
                   ? nft.attributes.map((a) => a.value).join(', ')
-                  : 'Óculos, Esmeralda, Raro'}
+                  : `${nft.category}, ${nft.rarity}`}
               </span>
             </div>
             <div className="flex items-center gap-2 pt-1">
@@ -510,5 +708,6 @@ function NftDetailPage() {
         </div>
       )}
     </div>
-  )
+  </>
+)
 }

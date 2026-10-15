@@ -3,9 +3,10 @@ import { createRoute, Link, useNavigate } from '@tanstack/react-router'
 import { rootRoute } from './__root'
 import { useCart } from '../hooks/useCart'
 import { useNfts } from '../hooks/useNfts'
+import { useAuth } from '../hooks/useAuth'
 import { formatEth } from '../lib/eth'
 import { NftCard } from '../components/catalog/NftCard'
-import { ShoppingBag, Trash2, Plus, Minus, AlertTriangle } from 'lucide-react'
+import { ShoppingBag, Trash2, Plus, Minus, AlertTriangle, ChevronLeft } from 'lucide-react'
 
 export const cartRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -26,6 +27,7 @@ function CartPage() {
     removeCoupon,
   } = useCart()
 
+  const { isAuthenticated } = useAuth()
   const { data: allNftsData } = useNfts({ pageSize: 10 })
   const navigate = useNavigate()
   const [couponInput, setCouponInput] = useState('')
@@ -40,25 +42,227 @@ function CartPage() {
   }
 
   const handleProceed = () => {
-    navigate({ to: '/checkout' })
+    if (!isAuthenticated) {
+      window.dispatchEvent(new CustomEvent('jungle:open-auth'))
+    } else {
+      navigate({ to: '/checkout' })
+    }
   }
 
   const featuredNfts = (allNftsData?.items || []).slice(0, 5)
 
   return (
-    <div className="max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-10 font-mono text-xs text-[#9E968F]">
-      {/* 1. Breadcrumb: Início / Mercado / Carrinho */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#9E968F]">
-        <Link to="/" className="hover:text-[#F3EFEA] transition-colors">
-          Início
-        </Link>
-        <span>/</span>
-        <Link to="/mercado" className="hover:text-[#F3EFEA] transition-colors">
-          Mercado
-        </Link>
-        <span>/</span>
-        <span className="text-[#F3EFEA]">Carrinho</span>
-      </nav>
+    <>
+      {/* =========================================================================
+          1. VIEW MOBILE (CARRINHO FIGMA MOCKUP) - <= 768px
+          ========================================================================= */}
+      <div className="block md:hidden min-h-screen px-4 pt-4 pb-12 font-mono text-xs text-[#9E968F] bg-[#140E0C] space-y-4">
+        {/* Top Bar Mobile com botão Voltar (<) e Título Carrinho de NFTs */}
+        <div className="flex items-center justify-between relative pb-1">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="h-10 w-10 rounded-full bg-[#241C19] border border-[#37271c] flex items-center justify-center text-[#F3EFEA] hover:text-[#D98A53] transition-colors shadow-md active:scale-95 shrink-0 z-10"
+            aria-label="Voltar"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          <h1 className="text-base font-bold text-[#F3EFEA] tracking-wider text-center absolute inset-x-0 pointer-events-none">
+            Carrinho de NFTs
+          </h1>
+
+          {/* Spacer para manter o título perfeitamente centralizado */}
+          <div className="w-10 h-10 shrink-0" aria-hidden="true" />
+        </div>
+
+        {items.length === 0 ? (
+          <div className="rounded-2xl border border-[#37271c] bg-[#231A17] p-8 text-center space-y-4 my-8 shadow-lg">
+            <div className="h-14 w-14 rounded-full bg-[#1B1512] border border-[#37271c] flex items-center justify-center text-[#D98A53] mx-auto">
+              <ShoppingBag className="h-6 w-6" />
+            </div>
+            <h2 className="text-sm font-bold text-[#F3EFEA]">Seu carrinho está vazio</h2>
+            <p className="text-xs text-[#9E968F]">
+              Nenhum colecionável adicionado ainda. Explore o catálogo para encontrar NFTs raros.
+            </p>
+            <div className="pt-2">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 bg-[#C48247] hover:bg-[#D98A53] text-[#151312] font-bold text-xs uppercase px-5 py-2.5 rounded-xl transition-colors"
+              >
+                Explorar Catálogo
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Lista Vertical de Cards de NFTs no Carrinho */}
+            <div className="space-y-3">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl bg-[#231A17] border border-[#37271c]/70 p-3.5 flex items-center gap-3.5 shadow-md"
+                >
+                  {/* Thumbnail do NFT */}
+                  <Link
+                    to="/nft/$id"
+                    params={{ id: item.nft.id }}
+                    className="h-18 w-18 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-[#1B1512] shrink-0 border border-[#37271c]/40 block"
+                  >
+                    <img
+                      src={item.nft.image}
+                      alt={item.nft.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </Link>
+
+                  {/* Detalhes: Nome, Edição, Preço em ETH */}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <Link
+                      to="/nft/$id"
+                      params={{ id: item.nft.id }}
+                      className="text-xs font-bold text-[#F3EFEA] hover:text-[#D98A53] transition-colors truncate block"
+                    >
+                      {item.nft.name}
+                    </Link>
+                    <p className="text-[11px] text-[#9E968F]">
+                      Edição: {item.edition.name || '1/50'}
+                    </p>
+                    <p className="text-xs font-bold text-[#D98A53]">
+                      {formatEth(Number(item.unitPriceEth) * item.quantity)}
+                    </p>
+                  </div>
+
+                  {/* Controles de Quantidade: [-] Qtd [+] (sem ícone de lixeira, conforme solicitado) */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity - 1 })}
+                      disabled={isUpdatingQuantity || item.quantity <= 1}
+                      className="h-6 w-6 rounded-full bg-[#2D211C] border border-[#3D2E27] text-[#9E968F] hover:text-[#F3EFEA] flex items-center justify-center font-bold text-xs disabled:opacity-30 transition-colors active:scale-95"
+                      aria-label="Diminuir quantidade"
+                    >
+                      <Minus className="h-3 w-3 stroke-[2.5]" />
+                    </button>
+
+                    <span className="w-4 text-center font-bold text-[#F3EFEA] text-xs">
+                      {item.quantity}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
+                      disabled={isUpdatingQuantity || item.quantity >= item.edition.availableSupply}
+                      className="h-6 w-6 rounded-full bg-[#2D211C] border border-[#3D2E27] text-[#9E968F] hover:text-[#F3EFEA] flex items-center justify-center font-bold text-xs disabled:opacity-30 transition-colors active:scale-95"
+                      aria-label="Aumentar quantidade"
+                    >
+                      <Plus className="h-3 w-3 stroke-[2.5]" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Card de Resumo (Bottom Card conforme Figma) */}
+            <div className="rounded-3xl bg-[#231A17] border border-[#37271c]/70 p-5 space-y-4 shadow-xl">
+              {/* Campo Código Promocional em Formato Pill com Botão Aplicar Embutido */}
+              <form onSubmit={handleApplyCoupon} className="relative flex items-center">
+                <input
+                  type="text"
+                  placeholder="Digite o código promocional..."
+                  value={couponInput}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  className="w-full h-11 pl-4 pr-24 rounded-full bg-[#18110F] border border-[#37271c] text-xs font-mono text-[#F3EFEA] placeholder:text-[#9E968F]/60 focus:outline-none focus:border-[#D98A53] transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={isApplyingCoupon}
+                  className="absolute right-1.5 top-1.5 bottom-1.5 px-4 sm:px-5 rounded-full bg-[#C48247] hover:bg-[#D98A53] text-[#151312] font-mono font-bold text-xs flex items-center justify-center transition-colors active:scale-95 tracking-wide disabled:opacity-50"
+                >
+                  {isApplyingCoupon ? '...' : 'Aplicar'}
+                </button>
+              </form>
+
+              {couponFeedback && (
+                <p className={`text-[11px] px-1 ${couponFeedback.isSuccess ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {couponFeedback.message}
+                </p>
+              )}
+
+              {couponCode && (
+                <div className="flex items-center justify-between text-[11px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/30">
+                  <span>Cupom ativo: <strong>{couponCode}</strong></span>
+                  <button type="button" onClick={removeCoupon} className="underline hover:text-white">
+                    Remover
+                  </button>
+                </div>
+              )}
+
+              {/* Detalhamento dos Preços */}
+              <div className="space-y-2.5 text-xs font-mono pt-1">
+                <div className="flex justify-between items-center text-[#9E968F]">
+                  <span>Subtotal</span>
+                  <span className="text-[#F3EFEA] font-medium">{formatEth(quote?.subtotalEth)}</span>
+                </div>
+
+                <div className="flex justify-between items-center text-[#9E968F]">
+                  <span>Desconto do lançamento</span>
+                  <span className="text-[#9E968F]">
+                    {quote?.discountEth && quote.discountEth !== '0.000000'
+                      ? `(-) ${formatEth(quote.discountEth)}`
+                      : '(-) 00.00'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-start text-[#9E968F]">
+                  <span className="pt-0.5">Taxa de rede</span>
+                  <div className="text-right">
+                    <span className="text-[#F3EFEA] font-medium block">
+                      {formatEth(quote?.networkFeeEth)}
+                    </span>
+                    <span className="text-[10px] text-[#C48247] block -mt-0.5">
+                      Taxa estimada
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-3 border-t border-[#37271c]/70 text-sm font-bold">
+                  <span className="text-[#F3EFEA]">Total</span>
+                  <span className="text-base font-bold text-[#D98A53]">
+                    {formatEth(quote?.totalEth)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Botão de Ação: Conectar e finalizar */}
+              <button
+                type="button"
+                onClick={handleProceed}
+                className="w-full h-12 bg-[#C48247] hover:bg-[#D98A53] text-[#151312] font-mono font-bold text-xs uppercase rounded-2xl transition-all shadow-lg active:scale-98 flex items-center justify-center tracking-wider mt-2"
+              >
+                Conectar e finalizar
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* =========================================================================
+          2. VIEW DESKTOP (Telas >= 768px - inalterada)
+          ========================================================================= */}
+      <div className="hidden md:block max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-10 font-mono text-xs text-[#9E968F]">
+        {/* 1. Breadcrumb: Início / Mercado / Carrinho */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#9E968F]">
+          <Link to="/" className="hover:text-[#F3EFEA] transition-colors">
+            Início
+          </Link>
+          <span>/</span>
+          <Link to="/mercado" className="hover:text-[#F3EFEA] transition-colors">
+            Mercado
+          </Link>
+          <span>/</span>
+          <span className="text-[#F3EFEA]">Carrinho</span>
+        </nav>
 
       {items.length === 0 ? (
         <div className="rounded-2xl border border-[#37271c] bg-[#291C19] p-12 text-center max-w-lg mx-auto space-y-4">
@@ -302,6 +506,7 @@ function CartPage() {
           <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]/20" aria-hidden="true" />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

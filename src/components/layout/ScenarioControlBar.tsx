@@ -62,59 +62,65 @@ export function ScenarioControlBar() {
   }
 
   return (
-    <div className="bg-surface-elevated/95 border-b border-border text-xs text-stone-300">
-      <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="border-amber-500/40 text-amber-400 font-mono py-0 text-[10px]">
-            MSW + Socket.IO Mock Layer
+    <div className="bg-[#19120F] border-b border-[#37271c] text-xs text-[#9E968F] font-mono z-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1.5 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Badge
+            variant="outline"
+            className="border-[#D98A53]/50 text-[#D98A53] font-mono py-0.5 px-2 text-[10px] whitespace-nowrap shrink-0 inline-flex items-center"
+          >
+            <span className="hidden sm:inline">MSW + Socket.IO Mock Layer</span>
+            <span className="sm:hidden">MSW + Socket.IO</span>
           </Badge>
-          <span className="hidden sm:inline text-stone-400">
+          <span className="hidden md:inline text-[#7A6C63] text-[11px] whitespace-nowrap">
             Painel de Cenários de Avaliação
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setIsOpen(!isOpen)}
-            className="h-6 px-2 text-xs text-amber-400 hover:text-amber-300 gap-1"
+            className="h-6 px-2 text-[11px] font-mono text-[#D98A53] hover:text-[#E59864] hover:bg-[#2A1D18] gap-1 shrink-0 whitespace-nowrap"
           >
-            <Settings className="h-3 w-3" />
-            <span>Cenários de Teste</span>
-            {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            <Settings className="h-3 w-3 shrink-0" />
+            <span className="hidden sm:inline">Cenários de Teste</span>
+            <span className="sm:hidden">Cenários</span>
+            {isOpen ? <ChevronUp className="h-3 w-3 shrink-0" /> : <ChevronDown className="h-3 w-3 shrink-0" />}
           </Button>
 
           <Button
             size="sm"
             variant="destructive"
             onClick={handleResetDb}
-            className="h-6 px-2 text-[10px] gap-1"
+            className="h-6 px-2 text-[10px] font-mono bg-red-950/60 hover:bg-red-900/80 text-red-300 border border-red-800/60 gap-1 shrink-0 whitespace-nowrap"
             title="Restaura todos os mocks para os dados originais"
           >
-            <RefreshCw className="h-3 w-3" />
-            Resetar Mocks
+            <RefreshCw className="h-3 w-3 shrink-0" />
+            <span className="hidden sm:inline">Resetar Mocks</span>
+            <span className="sm:hidden">Resetar</span>
           </Button>
         </div>
       </div>
 
       {isOpen && (
-        <div className="border-t border-border/60 bg-black/50 p-4 transition-all">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="border-t border-[#37271c] bg-[#160E0B] p-4 transition-all font-mono">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {/* Latency control */}
             <div className="space-y-1.5">
-              <label className="font-semibold text-stone-200 block">
+              <label className="font-semibold text-[#F3EFEA] block text-xs">
                 Latência de Rede (ms)
               </label>
-              <div className="flex gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                 {[0, 150, 1200, 2500].map((ms) => (
                   <button
                     key={ms}
                     onClick={() => handleLatencyChange(ms)}
                     className={`px-2 py-1 rounded text-xs font-mono transition-colors ${
                       latency === ms
-                        ? 'bg-primary text-black font-bold'
-                        : 'bg-surface border border-border hover:bg-surface-hover'
+                        ? 'bg-[#D98A53] text-[#140E0C] font-bold'
+                        : 'bg-[#1F1613] border border-[#37271c] text-[#9E968F] hover:bg-[#2A1D18] hover:text-[#F3EFEA]'
                     }`}
                   >
                     {ms}ms
@@ -125,7 +131,7 @@ export function ScenarioControlBar() {
 
             {/* Error simulation toggles */}
             <div className="space-y-1.5">
-              <label className="font-semibold text-stone-200 block">
+              <label className="font-semibold text-[#F3EFEA] block text-xs">
                 Simulação de Falhas HTTP
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -133,8 +139,8 @@ export function ScenarioControlBar() {
                   onClick={toggle500}
                   className={`px-2 py-1 rounded text-xs flex items-center gap-1 transition-colors ${
                     is500
-                      ? 'bg-red-600 text-white font-bold'
-                      : 'bg-surface border border-border hover:bg-surface-hover'
+                      ? 'bg-red-700 text-white font-bold'
+                      : 'bg-[#1F1613] border border-[#37271c] text-[#9E968F] hover:bg-[#2A1D18] hover:text-[#F3EFEA]'
                   }`}
                 >
                   <AlertOctagon className="h-3 w-3" />
@@ -144,8 +150,8 @@ export function ScenarioControlBar() {
                   onClick={toggleTimeout}
                   className={`px-2 py-1 rounded text-xs flex items-center gap-1 transition-colors ${
                     isTimeout
-                      ? 'bg-amber-600 text-black font-bold'
-                      : 'bg-surface border border-border hover:bg-surface-hover'
+                      ? 'bg-[#D98A53] text-[#140E0C] font-bold'
+                      : 'bg-[#1F1613] border border-[#37271c] text-[#9E968F] hover:bg-[#2A1D18] hover:text-[#F3EFEA]'
                   }`}
                 >
                   <WifiOff className="h-3 w-3" />
@@ -156,15 +162,15 @@ export function ScenarioControlBar() {
 
             {/* Payment rejection simulation */}
             <div className="space-y-1.5">
-              <label className="font-semibold text-stone-200 block">
+              <label className="font-semibold text-[#F3EFEA] block text-xs">
                 Fluxo de Pagamento
               </label>
               <button
                 onClick={toggleReject}
                 className={`px-2 py-1 rounded text-xs flex items-center gap-1 transition-colors ${
                   isReject
-                    ? 'bg-red-600 text-white font-bold'
-                    : 'bg-surface border border-border hover:bg-surface-hover'
+                    ? 'bg-red-700 text-white font-bold'
+                    : 'bg-[#1F1613] border border-[#37271c] text-[#9E968F] hover:bg-[#2A1D18] hover:text-[#F3EFEA]'
                 }`}
               >
                 Simular Pagamento Recusado
@@ -173,7 +179,7 @@ export function ScenarioControlBar() {
 
             {/* Realtime Socket.IO trigger */}
             <div className="space-y-1.5">
-              <label className="font-semibold text-stone-200 block">
+              <label className="font-semibold text-[#F3EFEA] block text-xs">
                 Tempo Real (Socket.IO Event)
               </label>
               <Button
@@ -181,7 +187,7 @@ export function ScenarioControlBar() {
                 variant="default"
                 onClick={handleSimulateRealtimePriceChange}
                 isLoading={isTriggering}
-                className="h-7 text-xs w-full gap-1.5 font-bold"
+                className="h-7 text-xs w-full gap-1.5 font-bold bg-[#D98A53] hover:bg-[#E59864] text-[#140E0C] font-mono"
               >
                 <Zap className="h-3 w-3 fill-current" />
                 Disparar Alteração de Preço

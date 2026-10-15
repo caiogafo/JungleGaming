@@ -5,6 +5,9 @@ export interface User {
   email: string
   avatar: string
   bio?: string
+  walletNickname?: string
+  ensName?: string
+  ensSuffix?: string
   createdAt: string
 }
 
@@ -29,8 +32,12 @@ export interface RegisterCredentials {
 export interface UpdateProfilePayload {
   name: string
   username: string
+  email?: string
   bio?: string
   avatar?: string
+  walletNickname?: string
+  ensName?: string
+  ensSuffix?: string
 }
 
 export interface ChangePasswordPayload {

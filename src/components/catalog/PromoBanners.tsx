@@ -23,18 +23,22 @@ export function PromoBanners() {
               fill="none"
               aria-hidden="true"
             >
+              {/* Linha externa */}
               <path
-                d="M 0 63 C 8 72, 16 84, 22 100"
+                d="M 0 62.6 C 11.5 68, 21.5 84, 24.7 100"
                 stroke="#D98A53"
-                strokeWidth="1.2"
-                strokeOpacity="0.9"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeOpacity="0.95"
                 fill="none"
               />
+              {/* Linha interna paralela */}
               <path
-                d="M 0 80 C 3 86, 6 93, 10 100"
+                d="M 0 64 C 9.8 70, 19.2 85.5, 22.1 100"
                 stroke="#D98A53"
-                strokeWidth="1.2"
-                strokeOpacity="0.8"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeOpacity="0.9"
                 fill="none"
               />
             </svg>
@@ -82,18 +86,22 @@ export function PromoBanners() {
               fill="none"
               aria-hidden="true"
             >
+              {/* Linha externa */}
               <path
-                d="M 0 63 C 8 72, 16 84, 22 100"
+                d="M 0 62.6 C 11.5 68, 21.5 84, 24.7 100"
                 stroke="#D98A53"
-                strokeWidth="1.2"
-                strokeOpacity="0.9"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeOpacity="0.95"
                 fill="none"
               />
+              {/* Linha interna paralela */}
               <path
-                d="M 0 80 C 3 86, 6 93, 10 100"
+                d="M 0 64 C 9.8 70, 19.2 85.5, 22.1 100"
                 stroke="#D98A53"
-                strokeWidth="1.2"
-                strokeOpacity="0.8"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeOpacity="0.9"
                 fill="none"
               />
             </svg>

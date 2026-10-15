@@ -6,8 +6,8 @@ export function PromoBanners() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Banner Esquerdo: Lançamentos gênesis */}
         <div className="group relative flex flex-col sm:flex-row items-stretch rounded-2xl bg-[#291C19] border border-[#37271c] overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-0.5">
-          {/* Imagem preenchendo a lateral esquerda */}
-          <div className="w-full sm:w-[40%] md:w-[42%] aspect-square sm:aspect-auto shrink-0 relative overflow-hidden bg-[#241F1B]">
+          {/* Imagem preenchendo 50% da lateral esquerda */}
+          <div className="w-full sm:w-1/2 aspect-square sm:aspect-auto shrink-0 relative overflow-hidden bg-[#241F1B]">
             <img
               src="/assets/nfts/emerald_ape_hero.jpg"
               alt="Macaco com jaqueta varsity verde e óculos escuros"
@@ -15,7 +15,7 @@ export function PromoBanners() {
               loading="lazy"
             />
 
-            {/* Duas curvas decorativas âmbar no canto inferior esquerdo conforme Figma */}
+            {/* Linhas decorativas curvas âmbar no canto inferior esquerdo conforme Figma */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none z-10"
               viewBox="0 0 100 100"
@@ -24,29 +24,29 @@ export function PromoBanners() {
               aria-hidden="true"
             >
               <path
-                d="M 0 68 C 6 78, 14 90, 24 100"
+                d="M 0 63 C 8 72, 16 84, 22 100"
                 stroke="#D98A53"
-                strokeWidth="1"
-                strokeOpacity="0.85"
+                strokeWidth="1.2"
+                strokeOpacity="0.9"
                 fill="none"
               />
               <path
-                d="M 0 76 C 4 84, 9 93, 16 100"
+                d="M 0 80 C 3 86, 6 93, 10 100"
                 stroke="#D98A53"
-                strokeWidth="1"
-                strokeOpacity="0.85"
+                strokeWidth="1.2"
+                strokeOpacity="0.8"
                 fill="none"
               />
             </svg>
           </div>
 
-          {/* Conteúdo textual e botão com espaçamento vertical centralizado */}
-          <div className="flex-1 p-5 sm:p-6 lg:p-7 flex flex-col justify-center space-y-3.5">
-            <div className="space-y-2">
-              <h3 className="font-mono text-base sm:text-lg font-bold text-[#F3EFEA] leading-snug">
+          {/* Conteúdo textual e botão: alinhados à DIREITA (text-right) conforme Figma */}
+          <div className="w-full sm:w-1/2 p-5 sm:p-6 flex flex-col justify-center text-right items-end space-y-3">
+            <div className="space-y-1.5 w-full">
+              <h3 className="font-mono text-sm sm:text-base font-bold text-[#F3EFEA] leading-snug">
                 Lançamentos gênesis<br className="hidden sm:inline" /> de edição limitada
               </h3>
-              <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
+              <p className="font-mono text-[11px] sm:text-xs text-[#9E968F] leading-relaxed">
                 Colecione edições escassas diretamente dos criadores antes da revelação pública.
               </p>
             </div>
@@ -65,8 +65,8 @@ export function PromoBanners() {
 
         {/* Banner Direito: Arte digital selecionada */}
         <div className="group relative flex flex-col sm:flex-row items-stretch rounded-2xl bg-[#291C19] border border-[#37271c] overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-0.5">
-          {/* Imagem preenchendo a lateral esquerda */}
-          <div className="w-full sm:w-[40%] md:w-[42%] aspect-square sm:aspect-auto shrink-0 relative overflow-hidden bg-[#241F1B]">
+          {/* Imagem preenchendo 50% da lateral esquerda */}
+          <div className="w-full sm:w-1/2 aspect-square sm:aspect-auto shrink-0 relative overflow-hidden bg-[#241F1B]">
             <img
               src="/assets/nfts/black_chimpanzee_suit.jpg"
               alt="Macaco chimpanzé preto com fato marfim"
@@ -74,7 +74,7 @@ export function PromoBanners() {
               loading="lazy"
             />
 
-            {/* Duas curvas decorativas âmbar no canto inferior esquerdo conforme Figma */}
+            {/* Linhas decorativas curvas âmbar no canto inferior esquerdo conforme Figma */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none z-10"
               viewBox="0 0 100 100"
@@ -83,29 +83,29 @@ export function PromoBanners() {
               aria-hidden="true"
             >
               <path
-                d="M 0 68 C 6 78, 14 90, 24 100"
+                d="M 0 63 C 8 72, 16 84, 22 100"
                 stroke="#D98A53"
-                strokeWidth="1"
-                strokeOpacity="0.85"
+                strokeWidth="1.2"
+                strokeOpacity="0.9"
                 fill="none"
               />
               <path
-                d="M 0 76 C 4 84, 9 93, 16 100"
+                d="M 0 80 C 3 86, 6 93, 10 100"
                 stroke="#D98A53"
-                strokeWidth="1"
-                strokeOpacity="0.85"
+                strokeWidth="1.2"
+                strokeOpacity="0.8"
                 fill="none"
               />
             </svg>
           </div>
 
-          {/* Conteúdo textual e botão com espaçamento vertical centralizado */}
-          <div className="flex-1 p-5 sm:p-6 lg:p-7 flex flex-col justify-center space-y-3.5">
-            <div className="space-y-2">
-              <h3 className="font-mono text-base sm:text-lg font-bold text-[#F3EFEA] leading-snug">
+          {/* Conteúdo textual e botão: alinhados à DIREITA (text-right) conforme Figma */}
+          <div className="w-full sm:w-1/2 p-5 sm:p-6 flex flex-col justify-center text-right items-end space-y-3">
+            <div className="space-y-1.5 w-full">
+              <h3 className="font-mono text-sm sm:text-base font-bold text-[#F3EFEA] leading-snug">
                 Arte digital selecionada<br className="hidden sm:inline" /> e muito mais
               </h3>
-              <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
+              <p className="font-mono text-[11px] sm:text-xs text-[#9E968F] leading-relaxed">
                 Explore novos artistas, coleções verificadas e obras digitais que definem a cultura contemporânea.
               </p>
             </div>

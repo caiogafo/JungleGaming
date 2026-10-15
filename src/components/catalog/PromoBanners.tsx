@@ -32,13 +32,13 @@ export function PromoBanners() {
                 strokeOpacity="0.95"
                 fill="none"
               />
-              {/* Linha interna paralela */}
+              {/* Linha interna paralela (de baixo, mais fina conforme solicitado) */}
               <path
                 d="M 0 64 C 9.8 70, 19.2 85.5, 22.1 100"
                 stroke="#D98A53"
-                strokeWidth="1.4"
+                strokeWidth="0.8"
                 strokeLinecap="round"
-                strokeOpacity="0.9"
+                strokeOpacity="0.85"
                 fill="none"
               />
             </svg>
@@ -95,13 +95,13 @@ export function PromoBanners() {
                 strokeOpacity="0.95"
                 fill="none"
               />
-              {/* Linha interna paralela */}
+              {/* Linha interna paralela (de baixo, mais fina conforme solicitado) */}
               <path
                 d="M 0 64 C 9.8 70, 19.2 85.5, 22.1 100"
                 stroke="#D98A53"
-                strokeWidth="1.4"
+                strokeWidth="0.8"
                 strokeLinecap="round"
-                strokeOpacity="0.9"
+                strokeOpacity="0.85"
                 fill="none"
               />
             </svg>

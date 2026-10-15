@@ -37,14 +37,19 @@ export function HeroBanner() {
 
         {/* Direita: Imagem NFT grande alinhada com os cards da direita abaixo */}
         <div className="lg:col-span-5 flex justify-center lg:justify-end">
-          <div className="relative aspect-square w-full max-w-[340px] sm:max-w-sm lg:max-w-none overflow-hidden rounded-3xl shadow-xl group">
+          <Link
+            to="/nft/$id"
+            params={{ id: 'nft_1' }}
+            className="relative aspect-square w-full max-w-[340px] sm:max-w-sm lg:max-w-none overflow-hidden rounded-3xl shadow-xl group block focus:outline-none focus:ring-2 focus:ring-[#D98A53]"
+            aria-label="Ver detalhes de Emerald Ape #042"
+          >
             <img
               src="/assets/nfts/emerald_ape_hero.jpg"
-              alt="Emerald Varsity Ape"
+              alt="Emerald Ape #042"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="eager"
             />
-          </div>
+          </Link>
         </div>
       </div>
 

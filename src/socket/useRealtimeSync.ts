@@ -35,11 +35,61 @@ export function useRealtimeSync() {
     const unsubscribeNft = realtimeSocket.subscribeNftUpdated((event: NftUpdatedEvent) => {
       console.log('🔔 [Realtime] NFT atualizado:', event)
 
-      // 1. Invalidate catalog & details
+      // 1. Instantly update all NFT list and detail cache in TanStack Query
+      queryClient.setQueriesData({ queryKey: ['nfts'] }, (oldData: any) => {
+        if (!oldData) return oldData
+        if (oldData.items && Array.isArray(oldData.items)) {
+          return {
+            ...oldData,
+            items: oldData.items.map((item: any) => {
+              if (item.id === event.nftId) {
+                return {
+                  ...item,
+                  basePriceEth: event.changes.basePriceEth || item.basePriceEth,
+                  editions: item.editions?.map((ed: any) => ({
+                    ...ed,
+                    priceEth: event.changes.basePriceEth || ed.priceEth,
+                    availableSupply:
+                      event.changes.availableSupply !== undefined ? event.changes.availableSupply : ed.availableSupply,
+                  })),
+                }
+              }
+              return item
+            }),
+          }
+        }
+        if (Array.isArray(oldData)) {
+          return oldData.map((item: any) =>
+            item.id === event.nftId
+              ? {
+                  ...item,
+                  basePriceEth: event.changes.basePriceEth || item.basePriceEth,
+                }
+              : item
+          )
+        }
+        return oldData
+      })
+
+      queryClient.setQueryData(['nft', event.nftId], (oldNft: any) => {
+        if (!oldNft) return oldNft
+        return {
+          ...oldNft,
+          basePriceEth: event.changes.basePriceEth || oldNft.basePriceEth,
+          editions: oldNft.editions?.map((ed: any) => ({
+            ...ed,
+            priceEth: event.changes.basePriceEth || ed.priceEth,
+            availableSupply:
+              event.changes.availableSupply !== undefined ? event.changes.availableSupply : ed.availableSupply,
+          })),
+        }
+      })
+
+      // 2. Invalidate catalog & details
       queryClient.invalidateQueries({ queryKey: ['nfts'] })
       queryClient.invalidateQueries({ queryKey: ['nft', event.nftId] })
 
-      // 2. Invalidate cart & quote to reflect changes
+      // 3. Invalidate cart & quote to reflect changes
       queryClient.invalidateQueries({ queryKey: ['cart'] })
       queryClient.invalidateQueries({ queryKey: ['quote'] })
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { Search, ShoppingBag, Heart, User, LogOut, Wallet, Menu, X, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { useCart } from '../../hooks/useCart'
@@ -7,15 +7,28 @@ import { Button } from '../ui/button'
 
 interface NavbarProps {
   onOpenAuth: () => void
-  onOpenCart: () => void
+  onOpenCart?: () => void
 }
 
-export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
+export function Navbar({ onOpenAuth }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth()
   const { totalItemsCount } = useCart()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+
+  const isHome = pathname === '/'
+  const isMercado =
+    pathname.startsWith('/nft') ||
+    pathname === '/mercado' ||
+    pathname === '/cart' ||
+    pathname === '/checkout'
+
+  const lastSelectedNftId =
+    typeof window !== 'undefined'
+      ? sessionStorage.getItem('last_selected_nft_id') || 'nft_1'
+      : 'nft_1'
 
   const handleLogout = async () => {
     await logout()
@@ -36,21 +49,31 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
           </span>
         </Link>
 
-        {/* Centro: Links de navegação em monospace: Início (laranja ativo com traço na borda inferior), Mercado, Criadores, Aprenda */}
+        {/* Centro: Links de navegação em monospace: Início, Mercado, Criadores, Aprenda */}
         <nav className="hidden md:flex items-center gap-8 font-mono text-sm tracking-wide text-[#9E968F] h-20">
           <Link
             to="/"
-            className="text-[#D98A53] font-semibold hover:text-[#E59864] transition-colors relative flex items-center h-full"
+            className={`transition-colors relative flex items-center h-full ${
+              isHome ? 'text-[#D98A53] font-semibold' : 'hover:text-[#D98A53]'
+            }`}
           >
             <span>Início</span>
-            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
+            {isHome && (
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
+            )}
           </Link>
-          <a
-            href="#catalogo"
-            className="hover:text-[#D98A53] transition-colors flex items-center h-full"
+          <Link
+            to="/nft/$id"
+            params={{ id: lastSelectedNftId }}
+            className={`transition-colors relative flex items-center h-full ${
+              isMercado ? 'text-[#D98A53] font-semibold' : 'hover:text-[#D98A53]'
+            }`}
           >
-            Mercado
-          </a>
+            <span>Mercado</span>
+            {isMercado && (
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
+            )}
+          </Link>
           <a
             href="#criadores"
             className="hover:text-[#D98A53] transition-colors flex items-center h-full"
@@ -76,18 +99,17 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
             <Search className="h-5 w-5" />
           </button>
 
-          {/* Ícone de carrinho com badge */}
-          <button
-            type="button"
-            onClick={onOpenCart}
-            className="relative p-2 text-[#9E968F] hover:text-[#F3EFEA] transition-colors focus:outline-none focus:ring-1 focus:ring-[#D98A53] rounded-md"
-            aria-label="Abrir carrinho de compras"
+          {/* Ícone de carrinho com badge que leva à tela do carrinho */}
+          <Link
+            to="/cart"
+            className="relative p-2 text-[#9E968F] hover:text-[#F3EFEA] transition-colors focus:outline-none focus:ring-1 focus:ring-[#D98A53] rounded-md block"
+            aria-label="Ir para o carrinho de compras"
           >
             <ShoppingBag className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-[10px] flex items-center justify-center">
               {totalItemsCount}
             </span>
-          </button>
+          </Link>
 
           {/* Botão sólido Entrar com fundo laranja e cantos levemente arredondados */}
           {isAuthenticated && user ? (
@@ -103,7 +125,7 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
                   alt={user.name}
                   className="h-6 w-6 rounded-full object-cover border border-[#D98A53]/40"
                 />
-                <span className="font-mono text-xs font-semibold text-[#F3EFEA] hidden sm:inline max-w-[100px] truncate">
+                <span className="font-mono text-xs font-semibold text-[#F3EFEA] inline-block max-w-[80px] sm:max-w-[120px] truncate">
                   {user.name}
                 </span>
               </button>

@@ -19,16 +19,70 @@ export const authHandlers = [
       return HttpResponse.json({ message: 'E-mail é obrigatório' }, { status: 400 })
     }
 
-    const user = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
+    let user = db.users.find(
+      (u) =>
+        u.email.toLowerCase() === email.toLowerCase() ||
+        u.username.toLowerCase() === email.toLowerCase()
+    )
+
+    // Auto-create or provision user if not yet in database
     if (!user) {
-      return HttpResponse.json({ message: 'Credenciais inválidas. Usuário não encontrado.' }, { status: 401 })
+      const isContato = email.toLowerCase().includes('contato')
+      const usernameClean = email.includes('@') ? email.split('@')[0] : email
+      user = {
+        id: isContato ? 'user_contato' : `user_${Date.now()}`,
+        name: isContato ? 'Novo Sato' : usernameClean,
+        username: isContato ? 'novosato' : usernameClean,
+        email: email.includes('@') ? email : `${email}@email.com`,
+        avatar: '/assets/avatars/collector_1.jpg',
+        bio: 'Colecionador Web3 & early adopter.',
+        createdAt: new Date().toISOString(),
+      }
+
+      mockDb.update((d) => {
+        d.users.push(user!)
+        d.userFavorites[user!.id] = []
+        d.userCarts[user!.id] = []
+        d.userWallets[user!.id] = [
+          {
+            id: `w_${Date.now()}`,
+            userId: user!.id,
+            address: '0x71C836466D380195A852277d337a85F756F304B1',
+            label: 'MetaMask',
+            network: 'Ethereum',
+            isPrimary: true,
+            balanceEth: '4.852000',
+            status: 'connected',
+            createdAt: new Date().toISOString(),
+          },
+        ]
+      })
+    } else {
+      // Ensure user has at least one wallet configured
+      if (!db.userWallets[user.id] || db.userWallets[user.id].length === 0) {
+        mockDb.update((d) => {
+          d.userWallets[user!.id] = [
+            {
+              id: `w_${Date.now()}`,
+              userId: user!.id,
+              address: '0x71C836466D380195A852277d337a85F756F304B1',
+              label: 'MetaMask',
+              network: 'Ethereum',
+              isPrimary: true,
+              balanceEth: '4.852000',
+              status: 'connected',
+              createdAt: new Date().toISOString(),
+            },
+          ]
+        })
+      }
     }
 
     const token = `jwt_token_${user.id}_${Date.now()}`
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
     mockDb.update((d) => {
-      d.sessions[token] = { token, user, expiresAt }
+      d.sessions[token] = { token, user: user!, expiresAt }
     })
 
     return HttpResponse.json({
@@ -50,49 +104,63 @@ export const authHandlers = [
     const body = (await request.json()) as RegisterCredentials
     const { name, username, email } = body
 
-    if (!name || !username || !email) {
-      return HttpResponse.json({ message: 'Todos os campos são obrigatórios' }, { status: 400 })
+    if (!username || !email) {
+      return HttpResponse.json({ message: 'Nome de usuário e e-mail são obrigatórios' }, { status: 400 })
     }
 
-    const existingUser = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
-    if (existingUser) {
-      return HttpResponse.json({ message: 'E-mail já cadastrado na plataforma' }, { status: 409 })
+    const finalName = name || username
+    const cleanUsername = username.replace(/^@/, '')
+
+    let user = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
+    if (user) {
+      // Atualiza usuário existente e autentica
+      mockDb.update((d) => {
+        const u = d.users.find((x) => x.id === user!.id)
+        if (u) {
+          u.name = finalName
+          u.username = cleanUsername
+        }
+      })
+      user = { ...user, name: finalName, username: cleanUsername }
+    } else {
+      user = {
+        id: `user_${Date.now()}`,
+        name: finalName,
+        username: cleanUsername,
+        email,
+        avatar: '/assets/avatars/collector_1.jpg',
+        bio: 'Novo colecionador no Jungle NFT Marketplace.',
+        createdAt: new Date().toISOString(),
+      }
+
+      mockDb.update((d) => {
+        d.users.push(user!)
+        d.userFavorites[user!.id] = []
+        d.userCarts[user!.id] = []
+        d.userWallets[user!.id] = [
+          {
+            id: `w_${Date.now()}`,
+            userId: user!.id,
+            address: '0x71C836466D380195A852277d337a85F756F304B1',
+            label: 'MetaMask',
+            network: 'Ethereum',
+            isPrimary: true,
+            balanceEth: '4.852000',
+            status: 'connected',
+            createdAt: new Date().toISOString(),
+          },
+        ]
+      })
     }
 
-    const newUser: User = {
-      id: `user_${Date.now()}`,
-      name,
-      username,
-      email,
-      avatar: '/assets/avatars/collector_1.jpg',
-      bio: 'Novo colecionador no Jungle NFT Marketplace.',
-      createdAt: new Date().toISOString(),
-    }
-
-    const token = `jwt_token_${newUser.id}_${Date.now()}`
+    const token = `jwt_token_${user.id}_${Date.now()}`
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
     mockDb.update((d) => {
-      d.users.push(newUser)
-      d.sessions[token] = { token, user: newUser, expiresAt }
-      d.userFavorites[newUser.id] = []
-      d.userCarts[newUser.id] = []
-      d.userWallets[newUser.id] = [
-        {
-          id: `w_${Date.now()}`,
-          userId: newUser.id,
-          address: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
-          label: 'Carteira Principal',
-          network: 'Ethereum',
-          isPrimary: true,
-          balanceEth: '2.500000',
-          status: 'connected',
-          createdAt: new Date().toISOString(),
-        },
-      ]
+      d.sessions[token] = { token, user: user!, expiresAt }
     })
 
-    return HttpResponse.json({ token, user: newUser, expiresAt }, { status: 201 })
+    return HttpResponse.json({ token, user, expiresAt }, { status: 201 })
   }),
 
   // GET /api/auth/session

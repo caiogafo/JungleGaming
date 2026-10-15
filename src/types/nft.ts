@@ -42,6 +42,7 @@ export interface NFT {
   originalPriceEth?: string
   createdAt: string
   version: number // for event ordering & conflict detection
+  attributes?: NftProperty[]
 }
 
 export interface NftFilterParams {

@@ -15,7 +15,9 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authApi.login(credentials),
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      // Set session data immediately for instantaneous UI update
+      queryClient.setQueryData(['session'], data)
       // Re-fetch session
       await queryClient.invalidateQueries({ queryKey: ['session'] })
       // Migrate guest cart items to the authenticated user cart
@@ -30,12 +32,14 @@ export function useAuth() {
 
   const registerMutation = useMutation({
     mutationFn: (payload: RegisterCredentials) => authApi.register(payload),
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      queryClient.setQueryData(['session'], data)
       await queryClient.invalidateQueries({ queryKey: ['session'] })
       await cartApi.migrateGuestCart().catch(() => {})
       queryClient.invalidateQueries({ queryKey: ['cart'] })
       queryClient.invalidateQueries({ queryKey: ['favorites'] })
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
     },
   })
 

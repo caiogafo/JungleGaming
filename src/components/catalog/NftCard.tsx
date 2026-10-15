@@ -16,21 +16,7 @@ export function NftCard({ nft, onOpenAuth }: NftCardProps) {
 
   const isFav = isFavorite(nft.id)
   const defaultEdition = nft.editions[0]
-  const getCardPrice = () => {
-    switch (nft.id) {
-      case 'nft_1': return '1.19'
-      case 'nft_2': return '1.69'
-      case 'nft_3': return '1.99'
-      case 'nft_4': return '1.29'
-      case 'nft_5': return '1.39'
-      case 'nft_6': return '1.79'
-      case 'nft_7': return '0.99'
-      case 'nft_8': return '0.69'
-      case 'nft_9': return '0.39'
-      default: return defaultEdition?.priceEth || nft.basePriceEth
-    }
-  }
-  const currentPrice = getCardPrice()
+  const currentPrice = nft.basePriceEth || defaultEdition?.priceEth || '0.00'
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault()

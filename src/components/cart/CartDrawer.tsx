@@ -45,11 +45,7 @@ export function CartDrawer({ isOpen, onClose, onOpenAuth }: CartDrawerProps) {
 
   const handleProceedToCheckout = () => {
     onClose()
-    if (!isAuthenticated) {
-      onOpenAuth()
-    } else {
-      navigate({ to: '/checkout' })
-    }
+    navigate({ to: '/cart' })
   }
 
   return (

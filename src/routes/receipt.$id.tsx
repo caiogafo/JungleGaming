@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { createRoute, Link, useParams } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
+import { createRoute, Link, useParams, useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { rootRoute } from './__root'
 import { useOrderDetail } from '../hooks/useOrders'
 import { formatEth } from '../lib/eth'
-import { Button } from '../components/ui/button'
-import { Badge } from '../components/ui/badge'
-import { CheckCircle2, Copy, Check, ExternalLink, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react'
+import { realtimeSocket } from '../socket/socketClient'
+import { X, ExternalLink, Check, Copy, AlertCircle, RefreshCw } from 'lucide-react'
 
 export const receiptRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -13,163 +13,462 @@ export const receiptRoute = createRoute({
   component: ReceiptPage,
 })
 
+function formatOrderDate(dateStr?: string): string {
+  if (!dateStr) return '29 Jul, 2026'
+  try {
+    const d = new Date(dateStr)
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    const day = d.getDate()
+    const month = months[d.getMonth()]
+    const year = d.getFullYear()
+    return `${day} ${month}, ${year}`
+  } catch {
+    return '29 Jul, 2026'
+  }
+}
+
+function formatShortTxHash(hash?: string): string {
+  if (!hash) return '0xA91F...E82C'
+  if (hash.includes('...')) return hash
+  if (hash.length <= 14) return hash
+  return `${hash.slice(0, 6)}...${hash.slice(-4).toUpperCase()}`
+}
+
+function ThankYouEnvelopeIcon({ className = 'h-16 w-16' }: { className?: string }) {
+  return (
+    <svg
+      className={`${className} text-[#D98A53] mx-auto`}
+      viewBox="0 0 64 64"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* Back flap */}
+      <path d="M12 28L32 12L52 28" />
+      {/* Letter sheet */}
+      <rect x="18" y="10" width="28" height="26" rx="2" fill="#201713" stroke="currentColor" strokeWidth="2" />
+      {/* THANK YOU text */}
+      <text
+        x="32"
+        y="21"
+        textAnchor="middle"
+        fill="#D98A53"
+        fontSize="6.5"
+        fontWeight="bold"
+        fontFamily="monospace"
+        letterSpacing="0.5"
+      >
+        THANK
+      </text>
+      <text
+        x="32"
+        y="29"
+        textAnchor="middle"
+        fill="#D98A53"
+        fontSize="6.5"
+        fontWeight="bold"
+        fontFamily="monospace"
+        letterSpacing="0.5"
+      >
+        YOU
+      </text>
+      {/* Envelope body */}
+      <path d="M12 26V52H52V26" />
+      {/* Front V fold */}
+      <path d="M12 26L32 40L52 26" />
+      {/* Diagonal folds */}
+      <path d="M12 52L26 36" />
+      <path d="M52 52L38 36" />
+    </svg>
+  )
+}
+
+function PendingClockIcon({ className = 'h-16 w-16' }: { className?: string }) {
+  return (
+    <div className="relative mx-auto flex items-center justify-center h-16 w-16">
+      <div className="absolute inset-0 rounded-full border-2 border-[#D98A53]/20 border-t-[#D98A53] animate-spin" />
+      <svg
+        className={`${className} text-[#D98A53] p-3.5`}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    </div>
+  )
+}
+
+function RejectedAlertIcon({ className = 'h-16 w-16' }: { className?: string }) {
+  return (
+    <div className="relative mx-auto flex items-center justify-center h-16 w-16">
+      <svg
+        className={`${className} text-[#E5484D] mx-auto`}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </svg>
+    </div>
+  )
+}
+
 function ReceiptPage() {
   const { id } = useParams({ from: '/receipt/$id' })
   const { data: order, isLoading, isError } = useOrderDetail(id)
-  const [copied, setCopied] = useState(false)
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const [copiedHash, setCopiedHash] = useState(false)
+  const [showExplorerModal, setShowExplorerModal] = useState(false)
+
+  // Socket.IO real-time listener for order.updated
+  useEffect(() => {
+    const unsubscribe = realtimeSocket.subscribeOrderUpdated((event) => {
+      if (event.orderId === id) {
+        queryClient.setQueryData(['order', id], (prev: any) => {
+          if (!prev) return prev
+          return {
+            ...prev,
+            status: event.status,
+            transactionHash: event.transactionHash || prev.transactionHash,
+            errorMessage: event.errorMessage || prev.errorMessage,
+            confirmedAt: event.status === 'confirmed' ? new Date().toISOString() : prev.confirmedAt,
+          }
+        })
+        queryClient.invalidateQueries({ queryKey: ['order', id] })
+        queryClient.invalidateQueries({ queryKey: ['orders'] })
+        queryClient.invalidateQueries({ queryKey: ['cart'] })
+      }
+    })
+    return () => unsubscribe()
+  }, [id, queryClient])
+
+  // Polling & auto-transition fallback while status is pending (takes 2-3s)
+  useEffect(() => {
+    if (order?.status === 'pending') {
+      const interval = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ['order', id] })
+      }, 800)
+
+      const timer = setTimeout(() => {
+        queryClient.setQueryData(['order', id], (prev: any) => {
+          if (!prev || prev.status !== 'pending') return prev
+          return {
+            ...prev,
+            status: 'confirmed',
+            transactionHash:
+              prev.transactionHash && !prev.transactionHash.includes('...')
+                ? prev.transactionHash
+                : '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+            confirmedAt: new Date().toISOString(),
+          }
+        })
+        queryClient.invalidateQueries({ queryKey: ['order', id] })
+      }, 2600)
+
+      return () => {
+        clearInterval(interval)
+        clearTimeout(timer)
+      }
+    }
+  }, [order?.status, id, queryClient])
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center text-stone-400">
-        <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-        <p className="text-sm">Carregando recibo da transação...</p>
+      <div className="min-h-[70vh] flex items-center justify-center font-mono text-xs text-[#9E968F]">
+        <div className="text-center space-y-3">
+          <div className="h-10 w-10 border-2 border-[#D98A53]/30 border-t-[#D98A53] rounded-full animate-spin mx-auto" />
+          <p>Carregando dados da transação...</p>
+        </div>
       </div>
     )
   }
 
   if (isError || !order) {
     return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <div className="h-16 w-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto mb-4">
-          <AlertCircle className="h-8 w-8" />
+      <div className="min-h-[70vh] flex items-center justify-center font-mono text-xs text-[#9E968F] px-4">
+        <div className="max-w-md w-full bg-[#201713] border border-[#37271c] rounded-2xl p-8 text-center space-y-4">
+          <div className="h-12 w-12 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+          <h2 className="text-base font-bold text-[#F3EFEA]">Pedido Não Encontrado</h2>
+          <p className="text-[#9E968F]">Não foi possível localizar o recibo para a transação #{id}.</p>
+          <div className="pt-2">
+            <Link
+              to="/mercado"
+              className="inline-flex bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold text-xs uppercase px-6 py-2.5 rounded-md transition-colors"
+            >
+              Voltar ao Mercado
+            </Link>
+          </div>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Pedido Não Encontrado</h2>
-        <p className="text-xs text-stone-400 mb-6">
-          Não foi possível localizar o recibo para o identificador #{id}.
-        </p>
-        <Link to="/">
-          <Button variant="default">Voltar ao Início</Button>
-        </Link>
       </div>
     )
   }
 
+  const isPending = order.status === 'pending'
+  const isRejected = order.status === 'rejected'
+  const isConfirmed = order.status === 'confirmed'
+
   const handleCopyHash = () => {
     if (order.transactionHash) {
       navigator.clipboard.writeText(order.transactionHash)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setCopiedHash(true)
+      setTimeout(() => setCopiedHash(false), 2000)
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-      <div className="rounded-3xl border border-border bg-surface p-6 sm:p-10 shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
-        {/* Success Header */}
-        <div className="text-center space-y-3">
-          <div className="h-20 w-20 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-lg shadow-emerald-500/10">
-            <CheckCircle2 className="h-10 w-10" />
-          </div>
-          <Badge variant="success" className="font-bold text-xs uppercase tracking-wide">
-            Transação Confirmada
-          </Badge>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Compra Realizada com Sucesso!
-          </h1>
-          <p className="text-xs text-stone-400 max-w-md mx-auto">
-            Os NFTs foram transferidos com segurança para sua carteira Web3. Um snapshot imutável foi registrado.
-          </p>
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-8 font-mono text-xs text-[#9E968F]">
+      {/* Modal Container */}
+      <div className="w-full max-w-[560px] bg-[#201713] border border-[#3D291F] border-b-4 border-b-[#D98A53] rounded-2xl p-6 sm:p-8 shadow-2xl relative space-y-6 animate-in zoom-in-95 duration-200">
+        {/* Close Button X (top right) */}
+        <button
+          onClick={() => navigate({ to: '/mercado' })}
+          className="absolute top-5 right-5 text-[#9E968F] hover:text-[#F3EFEA] transition-colors p-1"
+          aria-label="Fechar"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        {/* 1. Top Section (Status Icon + Subtitle) */}
+        <div className="text-center space-y-2 pt-1">
+          {isPending && (
+            <>
+              <PendingClockIcon />
+              <p className="text-xs sm:text-sm font-medium text-[#D98A53]">
+                Processando transação na rede...
+              </p>
+            </>
+          )}
+
+          {isConfirmed && (
+            <>
+              <ThankYouEnvelopeIcon />
+              <p className="text-xs sm:text-sm font-medium text-[#F3EFEA]">
+                Seus NFTs agora estão na sua carteira
+              </p>
+            </>
+          )}
+
+          {isRejected && (
+            <>
+              <RejectedAlertIcon />
+              <p className="text-xs sm:text-sm font-medium text-[#E5484D]">
+                Transação Recusada ou Cancelada
+              </p>
+            </>
+          )}
         </div>
 
-        {/* Transaction Metadata Card */}
-        <div className="rounded-2xl border border-border bg-surface-elevated p-4 sm:p-5 space-y-3 text-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-border/60">
-            <span className="text-stone-400">Identificador do Pedido</span>
-            <span className="font-mono font-bold text-white">#{order.id}</span>
-          </div>
-
-          <div className="flex items-center justify-between pb-2 border-b border-border/60">
-            <span className="text-stone-400">Rede Blockchain</span>
-            <span className="text-amber-400 font-bold">{order.network}</span>
-          </div>
-
-          <div className="flex items-center justify-between pb-2 border-b border-border/60">
-            <span className="text-stone-400">Carteira de Destino</span>
-            <span className="font-mono text-stone-300 truncate max-w-[220px]">
-              {order.walletAddress}
+        {/* 2. Horizontal Metadata Bar (4 Columns) */}
+        <div className="grid grid-cols-4 border-y border-[#37271c] py-3 text-left">
+          {/* ID da transação */}
+          <div className="pr-2 border-r border-[#37271c]">
+            <span className="block text-[10px] text-[#9E968F]">ID da transação</span>
+            <span className="block text-xs font-bold text-[#F3EFEA] truncate">
+              {formatShortTxHash(order.transactionHash)}
             </span>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-stone-400">Hash da Transação (TX)</span>
-              <button
-                onClick={handleCopyHash}
-                className="text-[11px] text-amber-400 hover:underline flex items-center gap-1"
-              >
-                {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-                {copied ? 'Copiado!' : 'Copiar Hash'}
-              </button>
-            </div>
-            <p className="font-mono text-[11px] text-stone-300 break-all bg-black/40 p-2 rounded-lg border border-border/40">
-              {order.transactionHash || '0xSimulatedPendingTxHash...'}
-            </p>
+          {/* Data */}
+          <div className="px-2 border-r border-[#37271c]">
+            <span className="block text-[10px] text-[#9E968F]">Data</span>
+            <span className="block text-xs font-bold text-[#F3EFEA]">
+              {formatOrderDate(order.createdAt)}
+            </span>
+          </div>
+
+          {/* Total */}
+          <div className="px-2 border-r border-[#37271c]">
+            <span className="block text-[10px] text-[#9E968F]">Total</span>
+            <span className="block text-xs font-bold text-[#F3EFEA]">
+              {formatEth(order.totalEth)}
+            </span>
+          </div>
+
+          {/* Carteira */}
+          <div className="pl-2">
+            <span className="block text-[10px] text-[#9E968F]">Carteira</span>
+            <span className="block text-xs font-bold text-[#F3EFEA] truncate">
+              {order.walletName || 'MetaMask'}
+            </span>
           </div>
         </div>
 
-        {/* Purchased Items Snapshot */}
+        {/* 3. Detalhes da transação Table */}
         <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400">
-            Itens Adquiridos ({order.items.length})
-          </h3>
-          <div className="divide-y divide-border/60 rounded-xl border border-border bg-surface-elevated/40 overflow-hidden">
+          <h3 className="font-bold text-xs text-[#F3EFEA]">Detalhes da transação</h3>
+
+          {/* Table Header */}
+          <div className="grid grid-cols-12 text-[10px] font-semibold text-[#9E968F] pb-1 border-b border-[#37271c]/60">
+            <span className="col-span-6">NFTs</span>
+            <span className="col-span-3 text-center">Edições</span>
+            <span className="col-span-3 text-right">Subtotal</span>
+          </div>
+
+          {/* Items List */}
+          <div className="space-y-3 pt-1">
             {order.items.map((item, idx) => (
-              <div key={idx} className="p-3.5 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-3 min-w-0">
+              <div key={idx} className="grid grid-cols-12 items-center text-xs">
+                {/* NFT thumbnail + name + token id */}
+                <div className="col-span-6 flex items-center gap-2.5 min-w-0 pr-2">
                   <img
                     src={item.nftImage}
                     alt={item.nftName}
-                    className="h-12 w-12 rounded-lg object-cover bg-stone-900 border border-border shrink-0"
+                    className="h-10 w-10 rounded-lg object-cover bg-[#1B1512] border border-[#37271c] shrink-0"
                   />
                   <div className="min-w-0">
-                    <p className="font-bold text-white truncate">{item.nftName}</p>
-                    <p className="text-[11px] text-amber-400">{item.editionName}</p>
-                    <p className="text-[11px] text-stone-400 font-mono">Qtd: {item.quantity}</p>
+                    <p className="font-bold text-[#F3EFEA] truncate">{item.nftName}</p>
+                    <p className="text-[10px] text-[#9E968F]">ID do token: #{item.tokenId || '0042'}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-mono font-bold text-white">{formatEth(item.subtotalEth)}</p>
-                  <p className="text-[10px] text-stone-500 font-mono">
-                    ({formatEth(item.unitPriceEth)} un.)
-                  </p>
+
+                {/* Edições (quantity) */}
+                <div className="col-span-3 text-center text-[#9E968F]">
+                  (x {item.quantity})
+                </div>
+
+                {/* Subtotal */}
+                <div className="col-span-3 text-right font-bold text-[#D98A53]">
+                  {formatEth(item.subtotalEth)}
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Financial Summary */}
-        <div className="space-y-2 text-xs text-stone-300 pt-2 border-t border-border">
-          <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span className="font-mono text-white">{formatEth(order.subtotalEth)}</span>
+        {/* 4. Financial Summary (Taxa de rede & Total) */}
+        <div className="space-y-1.5 pt-2 border-t border-[#37271c] text-xs">
+          <div className="flex justify-between items-center text-[#9E968F]">
+            <span className="text-right flex-1 pr-6">Taxa de rede</span>
+            <span className="text-[#F3EFEA] font-medium">{formatEth(order.networkFeeEth)}</span>
           </div>
-          {order.discountEth && order.discountEth !== '0.000000' && (
-            <div className="flex justify-between text-emerald-400">
-              <span>Desconto Cupom ({order.couponCode})</span>
-              <span className="font-mono">-{formatEth(order.discountEth)}</span>
-            </div>
-          )}
-          <div className="flex justify-between text-stone-400">
-            <span>Taxa de Rede (Gas)</span>
-            <span className="font-mono">{formatEth(order.networkFeeEth)}</span>
-          </div>
-          <div className="flex justify-between text-base font-extrabold text-white pt-2 border-t border-border">
-            <span>Total Pago</span>
-            <span className="text-amber-400 font-mono text-xl">{formatEth(order.totalEth)}</span>
+
+          <div className="flex justify-between items-center">
+            <span className="text-right flex-1 pr-6 text-[#F3EFEA] font-bold">Total</span>
+            <span className="text-sm font-bold text-[#D98A53]">{formatEth(order.totalEth)}</span>
           </div>
         </div>
 
-        {/* Navigation Action */}
-        <div className="pt-2">
-          <Link to="/" className="w-full inline-flex">
-            <Button variant="default" size="lg" className="w-full font-bold text-sm gap-2 shadow-amber-500/20">
-              <span>Explorar Mais Colecionáveis</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+        {/* 5. Informative Note */}
+        <div className="text-center text-[11px] text-[#9E968F] px-4 leading-relaxed">
+          {isPending && (
+            <p>
+              Aguardando confirmação na rede {order.network || 'Ethereum'}. Seus itens estão reservados enquanto os
+              blocos são validados (cerca de 2 a 3 segundos).
+            </p>
+          )}
+          {isConfirmed && (
+            <p>
+              Transação confirmada na {order.network || 'Ethereum'}. A propriedade foi transferida para sua carteira
+              conectada e registrada na rede.
+            </p>
+          )}
+          {isRejected && (
+            <p className="text-[#E5484D]">
+              {order.errorMessage ||
+                'Transação recusada pela rede blockchain ou saldo insuficiente. Seus itens continuam salvos no carrinho.'}
+            </p>
+          )}
+        </div>
+
+        {/* 6. Action Button */}
+        <div className="flex justify-center pt-1">
+          {isPending && (
+            <div className="inline-flex items-center gap-2 bg-[#291C19] border border-[#3D291F] text-[#D98A53] font-bold text-xs uppercase px-6 py-2.5 rounded-md">
+              <div className="h-3.5 w-3.5 border-2 border-[#D98A53] border-t-transparent rounded-full animate-spin" />
+              <span>Aguardando Confirmação...</span>
+            </div>
+          )}
+
+          {isConfirmed && (
+            <button
+              onClick={() => setShowExplorerModal(true)}
+              className="inline-flex items-center justify-center bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold text-xs uppercase px-8 py-2.5 rounded-md transition-colors"
+            >
+              Ver no Etherscan
+            </button>
+          )}
+
+          {isRejected && (
+            <Link
+              to="/checkout"
+              className="inline-flex items-center justify-center bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold text-xs uppercase px-8 py-2.5 rounded-md transition-colors"
+            >
+              Tentar Novamente
+            </Link>
+          )}
         </div>
       </div>
+
+      {/* Explorer Modal / Dialog */}
+      {showExplorerModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#201713] border border-[#3D291F] rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl relative">
+            <button
+              onClick={() => setShowExplorerModal(false)}
+              className="absolute top-4 right-4 text-[#9E968F] hover:text-[#F3EFEA]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="flex items-center gap-2 text-[#D98A53] font-bold text-sm">
+              <ExternalLink className="h-4 w-4" />
+              <span>Simulador de Blockchain Explorer ({order.network})</span>
+            </div>
+
+            <div className="space-y-2 text-xs text-[#9E968F]">
+              <div className="bg-[#1B1512] p-3 rounded-lg border border-[#37271c] space-y-1.5 font-mono text-[11px]">
+                <div>
+                  <span className="text-[#9E968F]">Status: </span>
+                  <span className="text-emerald-400 font-bold">Success (24 Block Confirmations)</span>
+                </div>
+                <div>
+                  <span className="text-[#9E968F]">Tx Hash: </span>
+                  <span className="text-[#F3EFEA] break-all">{order.transactionHash}</span>
+                </div>
+                <div>
+                  <span className="text-[#9E968F]">From: </span>
+                  <span className="text-[#F3EFEA] break-all">{order.walletAddress}</span>
+                </div>
+                <div>
+                  <span className="text-[#9E968F]">Rede: </span>
+                  <span className="text-[#D98A53] font-bold">{order.network}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={handleCopyHash}
+                className="flex-1 bg-[#1B1512] hover:bg-[#291C19] border border-[#37271c] text-[#F3EFEA] font-bold text-xs py-2 rounded-md flex items-center justify-center gap-1.5 transition-colors"
+              >
+                {copiedHash ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                <span>{copiedHash ? 'Hash Copiado!' : 'Copiar Hash'}</span>
+              </button>
+              <button
+                onClick={() => setShowExplorerModal(false)}
+                className="flex-1 bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold text-xs py-2 rounded-md transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

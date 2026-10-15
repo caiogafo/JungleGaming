@@ -125,8 +125,10 @@ export const nftsHandlers = [
         item.version += 1
         if (newPriceEth) {
           item.basePriceEth = newPriceEth
-          if (item.editions[0]) {
-            item.editions[0].priceEth = newPriceEth
+          if (item.editions) {
+            for (const ed of item.editions) {
+              ed.priceEth = newPriceEth
+            }
           }
         }
         if (availableSupply !== undefined && item.editions[0]) {

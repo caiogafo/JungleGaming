@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { ScenarioControlBar } from '../components/layout/ScenarioControlBar'
 import { RealtimeAlert } from '../components/feedback/RealtimeAlert'
@@ -16,6 +16,12 @@ function RootComponent() {
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const { latestNotice, clearNotice } = useRealtimeSync()
+
+  useEffect(() => {
+    const handleOpenAuth = () => setIsAuthOpen(true)
+    window.addEventListener('jungle:open-auth', handleOpenAuth)
+    return () => window.removeEventListener('jungle:open-auth', handleOpenAuth)
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-amber-500/20 selection:text-amber-400">

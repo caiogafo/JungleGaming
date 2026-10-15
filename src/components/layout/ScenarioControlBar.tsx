@@ -47,8 +47,9 @@ export function ScenarioControlBar() {
   const handleSimulateRealtimePriceChange = async () => {
     setIsTriggering(true)
     try {
-      // Simulate real-time price hike on NFT #nft_1 (Emerald Ape)
-      const newPrice = (Math.random() * 0.5 + 1.2).toFixed(6)
+      // Toggle between a noticeably higher price (1.75 ETH) and the base (1.19 ETH)
+      const current = parseFloat(mockDb.get().nfts.find((n) => n.id === 'nft_1')?.basePriceEth || '1.19')
+      const newPrice = (current >= 1.5 ? 1.19 : 1.75).toFixed(6)
       await nftsApi.simulatePriceUpdate('nft_1', newPrice)
     } finally {
       setIsTriggering(false)

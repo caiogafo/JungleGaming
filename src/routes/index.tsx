@@ -27,8 +27,14 @@ export const indexRoute = createRoute({
       search: typeof search.search === 'string' ? search.search : undefined,
       category: typeof search.category === 'string' ? (search.category as any) : undefined,
       rarity: typeof search.rarity === 'string' ? (search.rarity as any) : undefined,
-      minPrice: typeof search.minPrice === 'string' ? search.minPrice : undefined,
-      maxPrice: typeof search.maxPrice === 'string' ? search.maxPrice : undefined,
+      minPrice:
+        search.minPrice !== undefined && search.minPrice !== null && search.minPrice !== ''
+          ? String(search.minPrice)
+          : undefined,
+      maxPrice:
+        search.maxPrice !== undefined && search.maxPrice !== null && search.maxPrice !== ''
+          ? String(search.maxPrice)
+          : undefined,
       sort: typeof search.sort === 'string' ? (search.sort as any) : undefined,
       page: typeof search.page === 'number' ? search.page : Number(search.page) || undefined,
     }
@@ -53,10 +59,19 @@ function CatalogPage() {
 
   const updateFilters = (newFilters: Partial<NftFilterParams>) => {
     navigate({
-      search: (prev) => ({
-        ...prev,
-        ...newFilters,
-      }),
+      search: (prev) => {
+        const next = {
+          ...prev,
+          ...newFilters,
+        }
+        if (newFilters.minPrice === undefined && 'minPrice' in newFilters) {
+          delete (next as any).minPrice
+        }
+        if (newFilters.maxPrice === undefined && 'maxPrice' in newFilters) {
+          delete (next as any).maxPrice
+        }
+        return next
+      },
     })
   }
 

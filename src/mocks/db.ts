@@ -5,7 +5,7 @@ import type { Wallet } from '../types/wallet'
 import type { Order } from '../types/order'
 import type { Coupon } from '../types/cart'
 
-const STORAGE_KEY = 'kurio_nft_mock_db_v15'
+const STORAGE_KEY = 'kurio_nft_mock_db_v19'
 
 export interface MockDatabase {
   users: User[]
@@ -44,20 +44,29 @@ export const INITIAL_USERS: User[] = [
     bio: 'Curadora de coleções digitais e entusiasta de Web3 gaming.',
     createdAt: '2026-03-20T14:30:00.000Z',
   },
+  {
+    id: 'user_contato',
+    name: 'Novo Sato',
+    username: 'novosato',
+    email: 'contato@email.com',
+    avatar: '/assets/avatars/collector_1.jpg',
+    bio: 'Colecionador Web3 & early adopter de Jungle Gaming.',
+    createdAt: '2026-01-01T00:00:00.000Z',
+  },
 ]
 
 export const INITIAL_NFTS: NFT[] = [
   {
     id: 'nft_1',
-    name: 'Emerald Varsity Ape #042',
-    collection: 'Jungle Ape Yacht Club',
+    name: 'Emerald Ape #042',
+    collection: 'Kurio Apes',
     creator: {
       id: 'creator_1',
       name: 'Kurio Studios',
       avatar: '/assets/nfts/emerald_ape_hero.jpg',
       verified: true,
     },
-    description: 'Edição lendária do Emerald Ape trajando a clássica jaqueta varsity verde floresta e óculos escuros redondos vintage.',
+    description: 'Um colecionável digital finalizado à mão da coleção Kurio Editions, verificado na Ethereum, com arte desbloqueável e acesso para colecionadores.',
     image: '/assets/nfts/emerald_ape_hero.jpg',
     thumbnails: [
       '/assets/nfts/emerald_ape_hero.jpg',
@@ -68,14 +77,15 @@ export const INITIAL_NFTS: NFT[] = [
     rarity: 'Lendário',
     category: 'Apes',
     editions: [
-      { id: 'ed_1_std', name: 'Standard Edition', maxSupply: 50, availableSupply: 8, priceEth: '1.190000' },
-      { id: 'ed_1_foil', name: 'Holo Foil Variant', maxSupply: 10, availableSupply: 2, priceEth: '1.450000' },
-      { id: 'ed_1_gold', name: 'Golden Master 1/1', maxSupply: 1, availableSupply: 1, priceEth: '3.200000' },
+      { id: 'ed_1_1', name: '1/1', maxSupply: 1, availableSupply: 1, priceEth: '3.500000' },
+      { id: 'ed_1_10', name: '1/10', maxSupply: 10, availableSupply: 2, priceEth: '2.000000' },
+      { id: 'ed_1_50', name: '1/50', maxSupply: 50, availableSupply: 8, priceEth: '1.190000' },
+      { id: 'ed_1_open', name: 'ABERTA', maxSupply: 999, availableSupply: 999, priceEth: '0.850000' },
     ],
-    selectedEditionId: 'ed_1_std',
+    selectedEditionId: 'ed_1_50',
     basePriceEth: '1.190000',
-    contractAddress: '0x71C836466D380195A852277d337a85F756F304B1',
-    tokenId: '42',
+    contractAddress: '0x7A42...19E8',
+    tokenId: '0042',
     tokenStandard: 'ERC-721',
     blockchain: 'Ethereum',
     likesCount: 342,
@@ -359,6 +369,19 @@ export const INITIAL_WALLETS: Record<string, Wallet[]> = {
       createdAt: '2026-03-21T09:00:00Z',
     },
   ],
+  user_contato: [
+    {
+      id: 'w_contato_1',
+      userId: 'user_contato',
+      address: '0x71C836466D380195A852277d337a85F756F304B1',
+      label: 'MetaMask Principal',
+      network: 'Ethereum',
+      isPrimary: true,
+      balanceEth: '4.852000',
+      status: 'connected',
+      createdAt: '2026-01-16T11:00:00Z',
+    },
+  ],
 }
 
 export const INITIAL_COUPONS: Coupon[] = [
@@ -424,15 +447,26 @@ class MockDbService {
   }
 
   private load(): MockDatabase {
+    const fresh = getInitialDb()
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        return JSON.parse(stored)
+        const parsed = JSON.parse(stored)
+        return {
+          ...fresh,
+          ...parsed,
+          orders: Array.isArray(parsed.orders) ? parsed.orders : fresh.orders,
+          userCarts: parsed.userCarts || fresh.userCarts,
+          userWallets: parsed.userWallets || fresh.userWallets,
+          userFavorites: parsed.userFavorites || fresh.userFavorites,
+          sessions: parsed.sessions || fresh.sessions,
+          users: Array.isArray(parsed.users) ? parsed.users : fresh.users,
+          nfts: Array.isArray(parsed.nfts) ? parsed.nfts : fresh.nfts,
+        }
       }
     } catch {
       // ignore
     }
-    const fresh = getInitialDb()
     this.save(fresh)
     return fresh
   }

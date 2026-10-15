@@ -7,7 +7,7 @@ const PRECISION_SCALE = 100_000_000n // 8 decimal places
 const DECIMALS = 8
 
 function toBigIntScaled(val: string | number): bigint {
-  const str = String(val).trim()
+  const str = String(val).trim().replace(',', '.')
   if (!str) return 0n
   const [intPart, fracPart = ''] = str.split('.')
   const cleanInt = BigInt(intPart || '0')
@@ -16,18 +16,29 @@ function toBigIntScaled(val: string | number): bigint {
   return cleanInt * PRECISION_SCALE + (cleanInt < 0n ? -cleanFrac : cleanFrac)
 }
 
-function fromBigIntScaled(val: bigint, displayDecimals = 4): string {
+function fromBigIntScaled(val: bigint, displayDecimals = 2): string {
   const isNegative = val < 0n
   const absVal = isNegative ? -val : val
-  const intPart = absVal / PRECISION_SCALE
-  const fracPart = absVal % PRECISION_SCALE
-  const paddedFrac = fracPart.toString().padStart(DECIMALS, '0')
-  const trimmedFrac = paddedFrac.slice(0, displayDecimals)
-  return `${isNegative ? '-' : ''}${intPart}.${trimmedFrac}`
+
+  if (displayDecimals <= 0) {
+    const intPart = (absVal + PRECISION_SCALE / 2n) / PRECISION_SCALE
+    return `${isNegative ? '-' : ''}${intPart}`
+  }
+
+  // Round half-up to displayDecimals
+  const factor = 10n ** BigInt(DECIMALS - displayDecimals)
+  const halfFactor = factor / 2n
+  const roundedScaled = absVal + halfFactor
+
+  const intPart = roundedScaled / PRECISION_SCALE
+  const fracPart = (roundedScaled % PRECISION_SCALE) / factor
+  const paddedFrac = fracPart.toString().padStart(displayDecimals, '0')
+
+  return `${isNegative ? '-' : ''}${intPart}.${paddedFrac}`
 }
 
-export function formatEth(val: string | number | undefined, displayDecimals = 4): string {
-  if (val === undefined || val === null || val === '') return '0.0000 ETH'
+export function formatEth(val: string | number | undefined, displayDecimals = 2): string {
+  if (val === undefined || val === null || val === '') return '0.00 ETH'
   const cleanNum = typeof val === 'number' ? val.toString() : val
   return `${fromBigIntScaled(toBigIntScaled(cleanNum), displayDecimals)} ETH`
 }

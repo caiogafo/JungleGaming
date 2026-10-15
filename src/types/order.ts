@@ -11,6 +11,7 @@ export interface OrderItemSnapshot {
   quantity: number
   unitPriceEth: string
   subtotalEth: string
+  tokenId?: string
 }
 
 export interface Order {
@@ -26,7 +27,12 @@ export interface Order {
   networkFeeEth: string
   totalEth: string
   walletAddress: string
+  walletName?: string
   network: BlockchainNetwork
+  customerName?: string
+  customerEmail?: string
+  username?: string
+  notes?: string
   errorMessage?: string
   createdAt: string
   confirmedAt?: string
@@ -35,6 +41,12 @@ export interface Order {
 export interface CreateOrderPayload {
   idempotencyKey: string
   walletId: string
+  walletName?: string
+  walletAddress?: string
   network: BlockchainNetwork
   couponCode?: string
+  customerName?: string
+  customerEmail?: string
+  username?: string
+  notes?: string
 }

@@ -7,10 +7,12 @@ import { checkoutRoute } from './routes/checkout'
 import { receiptRoute } from './routes/receipt.$id'
 import { profileRoute } from './routes/profile'
 import { walletsRoute } from './routes/wallets'
+import { mercadoRoute } from './routes/mercado'
 import { NotFoundPage } from './routes/notFound'
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  mercadoRoute,
   nftDetailRoute,
   cartRoute,
   checkoutRoute,

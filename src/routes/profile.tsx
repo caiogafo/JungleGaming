@@ -129,6 +129,7 @@ export function ProfilePage() {
       to: '/profile',
       search: { tab: tab === 'profile' ? undefined : (tab as any) },
       replace: true,
+      resetScroll: false,
     })
   }
 

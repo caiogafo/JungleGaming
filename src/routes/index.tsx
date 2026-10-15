@@ -96,6 +96,8 @@ function CatalogPage() {
         }
         return next
       },
+      replace: true,
+      resetScroll: false,
     })
   }
 
@@ -108,6 +110,8 @@ function CatalogPage() {
         sort: 'recent',
         page: 1,
       },
+      replace: true,
+      resetScroll: false,
     })
   }
 

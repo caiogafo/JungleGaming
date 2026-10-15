@@ -41,7 +41,7 @@ export function Navbar({ onOpenAuth }: NavbarProps) {
 
   const handleLogout = async () => {
     await logout()
-    setIsUserMenuOpen(false)
+    setIsMobileMenuOpen(false)
     navigate({ to: '/' })
   }
 

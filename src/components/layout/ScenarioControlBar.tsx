@@ -3,7 +3,7 @@ import { mockDb } from '../../mocks/db'
 import { nftsApi } from '../../api/nfts.api'
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
-import { Settings, RefreshCw, Zap, WifiOff, AlertOctagon, ChevronDown, ChevronUp } from 'lucide-react'
+import { Settings, RefreshCw, Zap, WifiOff, AlertOctagon, ChevronDown, ChevronUp, ShoppingBag } from 'lucide-react'
 
 export function ScenarioControlBar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -57,7 +57,16 @@ export function ScenarioControlBar() {
   }
 
   const handleResetDb = () => {
+    try {
+      localStorage.clear()
+      sessionStorage.clear()
+    } catch {}
     mockDb.reset()
+    window.location.reload()
+  }
+
+  const handleLoadDemoCart = () => {
+    mockDb.loadDemoCart()
     window.location.reload()
   }
 
@@ -106,7 +115,7 @@ export function ScenarioControlBar() {
 
       {isOpen && (
         <div className="border-t border-[#37271c] bg-[#160E0B] p-4 transition-all font-mono">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Latency control */}
             <div className="space-y-1.5">
               <label className="font-semibold text-[#F3EFEA] block text-xs">
@@ -191,6 +200,22 @@ export function ScenarioControlBar() {
               >
                 <Zap className="h-3 w-3 fill-current" />
                 Disparar Alteração de Preço
+              </Button>
+            </div>
+
+            {/* Carregar Carrinho Figma */}
+            <div className="space-y-1.5">
+              <label className="font-semibold text-[#F3EFEA] block text-xs">
+                Massa de Testes (Figma)
+              </label>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleLoadDemoCart}
+                className="h-7 text-xs w-full gap-1.5 font-bold border-[#37271c] bg-[#1F1613] text-[#D98A53] hover:bg-[#2A1D18] hover:text-[#E59864] font-mono"
+              >
+                <ShoppingBag className="h-3 w-3" />
+                Carregar Carrinho Figma
               </Button>
             </div>
           </div>

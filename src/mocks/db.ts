@@ -5,7 +5,7 @@ import type { Wallet } from '../types/wallet'
 import type { Order } from '../types/order'
 import type { Coupon } from '../types/cart'
 
-const STORAGE_KEY = 'kurio_nft_mock_db_v19'
+const STORAGE_KEY = 'kurio_nft_mock_db_v20'
 
 export interface MockDatabase {
   users: User[]
@@ -454,6 +454,49 @@ export const INITIAL_COUPONS: Coupon[] = [
   },
 ]
 
+export const FIGMA_DEMO_CART_ITEMS: CartItem[] = [
+  {
+    id: 'item_init_1',
+    nftId: 'nft_1',
+    editionId: 'ed_1_50',
+    nft: INITIAL_NFTS[0],
+    edition: INITIAL_NFTS[0].editions[2],
+    quantity: 1,
+    unitPriceEth: '1.190000',
+    initialPriceEth: '1.190000',
+  },
+  {
+    id: 'item_init_2',
+    nftId: 'nft_5',
+    editionId: 'ed_5_std',
+    nft: INITIAL_NFTS[4],
+    edition: INITIAL_NFTS[4].editions[0],
+    quantity: 1,
+    unitPriceEth: '1.390000',
+    initialPriceEth: '1.390000',
+  },
+  {
+    id: 'item_init_3',
+    nftId: 'nft_6',
+    editionId: 'ed_6_std',
+    nft: INITIAL_NFTS[5],
+    edition: INITIAL_NFTS[5].editions[0],
+    quantity: 2,
+    unitPriceEth: '1.790000',
+    initialPriceEth: '1.790000',
+  },
+  {
+    id: 'item_init_4',
+    nftId: 'nft_7',
+    editionId: 'ed_7_std',
+    nft: INITIAL_NFTS[6],
+    edition: INITIAL_NFTS[6].editions[0],
+    quantity: 2,
+    unitPriceEth: '0.990000',
+    initialPriceEth: '0.990000',
+  },
+]
+
 function getInitialDb(): MockDatabase {
   const initialSession: AuthSession = {
     token: 'mock_jwt_token_user_1',
@@ -473,48 +516,7 @@ function getInitialDb(): MockDatabase {
     },
     userCarts: {
       user_1: [],
-      guest: [
-        {
-          id: 'item_init_1',
-          nftId: 'nft_1',
-          editionId: 'ed_1_50',
-          nft: INITIAL_NFTS[0],
-          edition: INITIAL_NFTS[0].editions[2],
-          quantity: 1,
-          unitPriceEth: '1.190000',
-          initialPriceEth: '1.190000',
-        },
-        {
-          id: 'item_init_2',
-          nftId: 'nft_5',
-          editionId: 'ed_5_std',
-          nft: INITIAL_NFTS[4],
-          edition: INITIAL_NFTS[4].editions[0],
-          quantity: 1,
-          unitPriceEth: '1.390000',
-          initialPriceEth: '1.390000',
-        },
-        {
-          id: 'item_init_3',
-          nftId: 'nft_6',
-          editionId: 'ed_6_std',
-          nft: INITIAL_NFTS[5],
-          edition: INITIAL_NFTS[5].editions[0],
-          quantity: 2,
-          unitPriceEth: '1.790000',
-          initialPriceEth: '1.790000',
-        },
-        {
-          id: 'item_init_4',
-          nftId: 'nft_7',
-          editionId: 'ed_7_std',
-          nft: INITIAL_NFTS[6],
-          edition: INITIAL_NFTS[6].editions[0],
-          quantity: 2,
-          unitPriceEth: '0.990000',
-          initialPriceEth: '0.990000',
-        },
-      ],
+      guest: [],
     },
     userWallets: JSON.parse(JSON.stringify(INITIAL_WALLETS)),
     orders: [],
@@ -597,7 +599,29 @@ class MockDbService {
     this.save(this.db)
   }
 
+  public loadDemoCart(userKey = 'guest') {
+    this.update((d) => {
+      const demoItems = JSON.parse(JSON.stringify(FIGMA_DEMO_CART_ITEMS))
+      d.userCarts[userKey] = demoItems
+      d.userCarts['guest'] = demoItems
+      d.userCarts['user_1'] = demoItems
+    })
+  }
+
   public reset() {
+    try {
+      const keysToRemove: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && (key.startsWith('kurio_') || key.startsWith('jungle_'))) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k))
+      sessionStorage.clear()
+    } catch {
+      // ignore
+    }
     const fresh = getInitialDb()
     this.save(fresh)
     return fresh

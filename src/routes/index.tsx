@@ -48,7 +48,7 @@ function CatalogPage() {
     maxPrice: searchParams.maxPrice,
     sort: searchParams.sort,
     page: searchParams.page,
-    pageSize: 8,
+    pageSize: 9,
   })
 
   const updateFilters = (newFilters: Partial<NftFilterParams>) => {
@@ -72,13 +72,13 @@ function CatalogPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+    <div className="max-w-[960px] mx-auto px-4 sm:px-6 lg:px-0 py-8 space-y-12">
       {/* Hero Banner Section */}
       <HeroBanner />
 
       {/* Main Catalog with Responsive Sidebar */}
-      <div id="catalogo" className="flex flex-col lg:flex-row gap-8 items-start pt-4">
-        <div className="w-full lg:w-64 shrink-0">
+      <div id="catalogo" className="w-full flex flex-col lg:flex-row gap-6 lg:gap-8 items-start pt-2">
+        <div className="w-full lg:w-[220px] shrink-0">
           <FilterSidebar
             filters={searchParams}
             onFilterChange={updateFilters}
@@ -86,24 +86,30 @@ function CatalogPage() {
           />
         </div>
 
-        <NftGrid
-          nfts={data?.items || []}
-          total={data?.total || 0}
-          currentPage={searchParams.page || 1}
-          totalPages={data?.totalPages || 1}
-          isLoading={isLoading}
-          sort={searchParams.sort || 'recent'}
-          onSortChange={(sort) => updateFilters({ sort: sort as any, page: 1 })}
-          onPageChange={(page) => updateFilters({ page })}
-          onResetFilters={resetFilters}
-        />
+        <div className="flex-1 w-full min-w-0">
+          <NftGrid
+            nfts={data?.items || []}
+            total={data?.total || 0}
+            currentPage={searchParams.page || 1}
+            totalPages={data?.totalPages || 1}
+            isLoading={isLoading}
+            sort={searchParams.sort || 'recent'}
+            onSortChange={(sort) => updateFilters({ sort: sort as any, page: 1 })}
+            onPageChange={(page) => updateFilters({ page })}
+            onResetFilters={resetFilters}
+          />
+        </div>
       </div>
 
       {/* 2.4 Banners Promocionais (2 Colunas) */}
-      <PromoBanners />
+      <div className="w-full">
+        <PromoBanners />
+      </div>
 
       {/* 2.5 Diário da Cunhagem (Blog com 4 Colunas) */}
-      <MintingJournal />
+      <div className="w-full">
+        <MintingJournal />
+      </div>
     </div>
   )
 }

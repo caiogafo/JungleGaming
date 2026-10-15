@@ -33,7 +33,7 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary min-h-screen overflow-x-hidden font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
-    background-color: #151312;
+    background-color: #1B1512;
     color: #F3EFEA;
   }
 
@@ -51,7 +51,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #151312;
+  background: #1B1512;
 }
 
 ::-webkit-scrollbar-thumb {

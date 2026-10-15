@@ -5,7 +5,7 @@ import type { Wallet } from '../types/wallet'
 import type { Order } from '../types/order'
 import type { Coupon } from '../types/cart'
 
-const STORAGE_KEY = 'kurio_nft_mock_db_v6'
+const STORAGE_KEY = 'kurio_nft_mock_db_v15'
 
 export interface MockDatabase {
   users: User[]
@@ -68,19 +68,19 @@ export const INITIAL_NFTS: NFT[] = [
     rarity: 'Lendário',
     category: 'Apes',
     editions: [
-      { id: 'ed_1_std', name: 'Standard Edition', maxSupply: 50, availableSupply: 8, priceEth: '0.850000' },
+      { id: 'ed_1_std', name: 'Standard Edition', maxSupply: 50, availableSupply: 8, priceEth: '1.190000' },
       { id: 'ed_1_foil', name: 'Holo Foil Variant', maxSupply: 10, availableSupply: 2, priceEth: '1.450000' },
       { id: 'ed_1_gold', name: 'Golden Master 1/1', maxSupply: 1, availableSupply: 1, priceEth: '3.200000' },
     ],
     selectedEditionId: 'ed_1_std',
-    basePriceEth: '0.850000',
+    basePriceEth: '1.190000',
     contractAddress: '0x71C836466D380195A852277d337a85F756F304B1',
     tokenId: '42',
     tokenStandard: 'ERC-721',
     blockchain: 'Ethereum',
     likesCount: 342,
     isFeatured: true,
-    createdAt: '2026-09-28T12:00:00Z',
+    createdAt: '2026-09-29T12:00:00Z',
     version: 1,
   },
   {
@@ -113,12 +113,12 @@ export const INITIAL_NFTS: NFT[] = [
     blockchain: 'Ethereum',
     likesCount: 219,
     isFeatured: true,
-    createdAt: '2026-09-27T15:00:00Z',
+    createdAt: '2026-09-28T12:00:00Z',
     version: 1,
   },
   {
     id: 'nft_3',
-    name: 'Neon Vessel #332',
+    name: 'Neon Vessel #552',
     collection: 'High Society Primates',
     creator: {
       id: 'creator_3',
@@ -142,17 +142,17 @@ export const INITIAL_NFTS: NFT[] = [
     basePriceEth: '1.990000',
     originalPriceEth: '2.29 ETH',
     contractAddress: '0x12c4b58e9944a9e5784381200dfa48501e389b02',
-    tokenId: '332',
+    tokenId: '552',
     tokenStandard: 'ERC-721',
     blockchain: 'Polygon',
     likesCount: 184,
     isFeatured: true,
-    createdAt: '2026-09-26T09:30:00Z',
+    createdAt: '2026-09-27T12:00:00Z',
     version: 1,
   },
   {
     id: 'nft_4',
-    name: 'Cosmic RGoom #118',
+    name: 'Cosmic Bloom #118',
     collection: 'Cyber Jungle Primate',
     creator: {
       id: 'creator_2',
@@ -176,7 +176,7 @@ export const INITIAL_NFTS: NFT[] = [
     blockchain: 'Ethereum',
     likesCount: 156,
     isFeatured: true,
-    createdAt: '2026-09-25T18:40:00Z',
+    createdAt: '2026-09-26T12:00:00Z',
     version: 1,
   },
   {
@@ -204,12 +204,12 @@ export const INITIAL_NFTS: NFT[] = [
     tokenStandard: 'ERC-721',
     blockchain: 'Ethereum',
     likesCount: 142,
-    createdAt: '2026-09-24T11:20:00Z',
+    createdAt: '2026-09-25T12:00:00Z',
     version: 1,
   },
   {
     id: 'nft_6',
-    name: 'Ivory Baron #003',
+    name: 'Ivory Baron #088',
     collection: 'High Society Primates',
     creator: {
       id: 'creator_3',
@@ -228,11 +228,11 @@ export const INITIAL_NFTS: NFT[] = [
     selectedEditionId: 'ed_6_std',
     basePriceEth: '1.790000',
     contractAddress: '0x12c4b58e9944a9e5784381200dfa48501e389b02',
-    tokenId: '3',
+    tokenId: '088',
     tokenStandard: 'ERC-721',
     blockchain: 'Polygon',
     likesCount: 290,
-    createdAt: '2026-09-23T08:15:00Z',
+    createdAt: '2026-09-24T12:00:00Z',
     version: 1,
   },
   {
@@ -260,12 +260,40 @@ export const INITIAL_NFTS: NFT[] = [
     tokenStandard: 'ERC-1155',
     blockchain: 'Arbitrum',
     likesCount: 204,
-    createdAt: '2026-09-22T14:45:00Z',
+    createdAt: '2026-09-23T12:00:00Z',
     version: 1,
   },
   {
     id: 'nft_8',
-    name: 'Golden Signal #103',
+    name: 'Golden Echo #104',
+    collection: 'Audio Metaverse Vibes',
+    creator: {
+      id: 'creator_4',
+      name: 'Soundwave Collective',
+      avatar: '/assets/nfts/golden_ape_headphones.jpg',
+      verified: true,
+    },
+    description: 'Edição sônica mestre com jaqueta bomber marfim e fones esmeralda.',
+    image: '/assets/nfts/golden_ape_headphones.jpg',
+    thumbnails: ['/assets/nfts/golden_ape_headphones.jpg'],
+    rarity: 'Raro',
+    category: 'Metaverse',
+    editions: [
+      { id: 'ed_8_std', name: 'Echo Cut', maxSupply: 100, availableSupply: 20, priceEth: '0.690000' },
+    ],
+    selectedEditionId: 'ed_8_std',
+    basePriceEth: '0.690000',
+    contractAddress: '0x99e8d41a7732a10129bcfe56328905b7642aa012',
+    tokenId: '104',
+    tokenStandard: 'ERC-1155',
+    blockchain: 'Arbitrum',
+    likesCount: 150,
+    createdAt: '2026-09-22T12:00:00Z',
+    version: 1,
+  },
+  {
+    id: 'nft_9',
+    name: 'Golden Signal #160',
     collection: 'Audio Metaverse Vibes',
     creator: {
       id: 'creator_4',
@@ -279,16 +307,16 @@ export const INITIAL_NFTS: NFT[] = [
     rarity: 'Comum',
     category: 'Metaverse',
     editions: [
-      { id: 'ed_8_std', name: 'Signal Pass', maxSupply: 250, availableSupply: 80, priceEth: '0.390000' },
+      { id: 'ed_9_std', name: 'Signal Pass', maxSupply: 250, availableSupply: 80, priceEth: '0.390000' },
     ],
-    selectedEditionId: 'ed_8_std',
+    selectedEditionId: 'ed_9_std',
     basePriceEth: '0.390000',
     contractAddress: '0x99e8d41a7732a10129bcfe56328905b7642aa012',
-    tokenId: '103',
+    tokenId: '160',
     tokenStandard: 'ERC-1155',
     blockchain: 'Arbitrum',
     likesCount: 112,
-    createdAt: '2026-09-21T20:10:00Z',
+    createdAt: '2026-09-21T12:00:00Z',
     version: 1,
   },
 ]

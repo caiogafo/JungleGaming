@@ -24,8 +24,8 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#282522] bg-[#151312]/95 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full border-b border-[#37271c] bg-[#1B1512]/95 backdrop-blur-md">
+      <div className="max-w-[960px] mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-0">
         {/* Esquerda: Logótipo KURIO em letras maiúsculas e fonte monospace */}
         <Link
           to="/"
@@ -36,29 +36,30 @@ export function Navbar({ onOpenAuth, onOpenCart }: NavbarProps) {
           </span>
         </Link>
 
-        {/* Centro: Links de navegação em monospace: Início (laranja ativo), Mercado, Criadores, Aprenda */}
-        <nav className="hidden md:flex items-center gap-8 font-mono text-sm tracking-wide text-[#9E968F]">
+        {/* Centro: Links de navegação em monospace: Início (laranja ativo com traço na borda inferior), Mercado, Criadores, Aprenda */}
+        <nav className="hidden md:flex items-center gap-8 font-mono text-sm tracking-wide text-[#9E968F] h-20">
           <Link
             to="/"
-            className="text-[#D98A53] font-semibold hover:text-[#E59864] transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#D98A53]"
+            className="text-[#D98A53] font-semibold hover:text-[#E59864] transition-colors relative flex items-center h-full"
           >
-            Início
+            <span>Início</span>
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
           </Link>
           <a
             href="#catalogo"
-            className="hover:text-[#D98A53] transition-colors"
+            className="hover:text-[#D98A53] transition-colors flex items-center h-full"
           >
             Mercado
           </a>
           <a
             href="#criadores"
-            className="hover:text-[#D98A53] transition-colors"
+            className="hover:text-[#D98A53] transition-colors flex items-center h-full"
           >
             Criadores
           </a>
           <a
             href="#diario"
-            className="hover:text-[#D98A53] transition-colors"
+            className="hover:text-[#D98A53] transition-colors flex items-center h-full"
           >
             Aprenda
           </a>

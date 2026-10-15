@@ -56,60 +56,61 @@ export function Footer() {
   }
 
   return (
-    <footer className="w-full text-[#9E968F] font-mono" aria-label="Rodapé do site">
-      {/* 1. Faixa Superior (Newsletter & Destaques) - Fundo em tom marrom escuro */}
-      <div className="bg-[#1A1816] border-t border-white/5 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Coluna 1: W - Segurança da carteira */}
-            <div className="flex items-start gap-3.5">
-              <div className="h-9 w-9 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-sm flex items-center justify-center shrink-0 shadow-md">
+    <footer className="w-full text-[#9E968F] font-mono mt-16 pb-12 px-4 sm:px-6 lg:px-0" aria-label="Rodapé do site">
+      {/* Card Retangular Bem Demarcado de 960px conforme Figma */}
+      <div className="max-w-[960px] mx-auto bg-[#291C19] border border-[#37271c] shadow-2xl">
+        {/* 1. Faixa Superior (W, C, D, Newsletter) com divisórias verticais entre colunas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 lg:divide-x divide-[#37271c]">
+          {/* Coluna 1: W */}
+          <div className="p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="h-10 w-10 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-base flex items-center justify-center shrink-0 mb-4 shadow-sm">
                 W
               </div>
-              <div className="space-y-1">
-                <h4 className="font-sans font-bold text-sm text-[#F3EFEA]">
-                  Segurança da carteira
-                </h4>
-                <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
-                  Custódia segura e suporte total a carteiras não-custodiais com proteção avançada.
-                </p>
-              </div>
+              <h4 className="font-mono font-bold text-sm text-[#F3EFEA] mb-2">
+                Segurança da carteira
+              </h4>
+              <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
+                Proteja sua carteira e colecione arte digital verificada com confiança.
+              </p>
             </div>
+          </div>
 
-            {/* Coluna 2: C - Criadores em destaque */}
-            <div className="flex items-start gap-3.5">
-              <div className="h-9 w-9 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-sm flex items-center justify-center shrink-0 shadow-md">
+          {/* Coluna 2: C */}
+          <div className="p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="h-10 w-10 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-base flex items-center justify-center shrink-0 mb-4 shadow-sm">
                 C
               </div>
-              <div className="space-y-1">
-                <h4 className="font-sans font-bold text-sm text-[#F3EFEA]">
-                  Criadores em destaque
-                </h4>
-                <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
-                  Artistas verificados e curadoria exclusiva dos nomes mais promissores da arte digital.
-                </p>
-              </div>
+              <h4 className="font-mono font-bold text-sm text-[#F3EFEA] mb-2">
+                Criadores em destaque
+              </h4>
+              <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
+                Conheça artistas, estúdios e comunidades que moldam a cultura digital na rede.
+              </p>
             </div>
+          </div>
 
-            {/* Coluna 3: D - Alertas de lançamentos */}
-            <div className="flex items-start gap-3.5">
-              <div className="h-9 w-9 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-sm flex items-center justify-center shrink-0 shadow-md">
+          {/* Coluna 3: D */}
+          <div className="p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="h-10 w-10 rounded-full bg-[#D98A53] text-[#151312] font-mono font-bold text-base flex items-center justify-center shrink-0 mb-4 shadow-sm">
                 D
               </div>
-              <div className="space-y-1">
-                <h4 className="font-sans font-bold text-sm text-[#F3EFEA]">
-                  Alertas de lançamentos
-                </h4>
-                <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
-                  Notificações instantâneas para nunca perder um drop de edição limitada.
-                </p>
-              </div>
+              <h4 className="font-mono font-bold text-sm text-[#F3EFEA] mb-2">
+                Alertas de lançamentos
+              </h4>
+              <p className="font-mono text-xs text-[#9E968F] leading-relaxed">
+                Receba calendários de cunhagem, novidades de listas de acesso e análises do mercado.
+              </p>
             </div>
+          </div>
 
-            {/* Coluna 4: Newsletter */}
-            <div className="space-y-2">
-              <h4 className="font-sans font-bold text-sm text-[#F3EFEA]">
-                Antecipe-se ao próximo lançamento
+          {/* Coluna 4: Newsletter */}
+          <div className="p-6 flex flex-col justify-between space-y-3">
+            <div>
+              <h4 className="font-mono font-bold text-sm text-[#F3EFEA] mb-3 leading-snug">
+                Antecipe-se ao próximo<br />lançamento
               </h4>
               <form onSubmit={handleSubscribe} className="flex items-center">
                 <input
@@ -118,44 +119,42 @@ export function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="digite seu e-mail..."
-                  className="w-full bg-[#151312] border border-white/10 rounded-l-md px-3 py-2 text-xs font-mono text-[#F3EFEA] placeholder:text-[#9E968F] focus:outline-none focus:border-[#D98A53]"
+                  className="w-full bg-[#1B1512] border border-[#37271c] rounded-l-md px-3 py-2 text-xs font-mono text-[#F3EFEA] placeholder:text-[#9E968F] focus:outline-none focus:border-[#D98A53]"
                   required
                 />
                 <button
                   type="submit"
-                  className="bg-[#D98A53] hover:bg-[#c77a46] text-[#151312] font-mono font-bold text-xs px-3.5 py-2 rounded-r-md transition-colors shrink-0"
+                  className="bg-[#D98A53] hover:bg-[#c77a46] text-[#151312] font-mono font-bold text-xs px-4 py-2 rounded-r-md transition-colors shrink-0"
                 >
                   {isSubscribed ? <CheckCircle2 className="h-4 w-4" /> : 'Enviar'}
                 </button>
               </form>
-              <p className="font-mono text-[11px] text-[#9E968F] leading-tight">
-                Receba atualizações semanais e convites para mints privados.
-              </p>
             </div>
+            <p className="font-mono text-[11px] text-[#9E968F] leading-tight">
+              Receba lançamentos selecionados, histórias de criadores e novidades do mercado.
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* 2. Faixa Intermédia (Contato) - Flexbox distribuído */}
-      <div className="bg-[#151312] border-t border-b border-white/5 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+        {/* 2. Faixa Intermediária de Contato */}
+        <div className="bg-[#3B2716] border-t border-b border-[#37271c] px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-center sm:text-left">
-            <span className="text-xl font-bold tracking-[0.2em] text-[#F3EFEA]">
+            <span className="text-base font-bold tracking-[0.2em] text-[#F3EFEA]">
               KURIO
             </span>
-            <span className="text-[#9E968F]">
-              Feito para colecionadores e entusiastas da arte digital.
+            <span className="text-[#C5BCB3]">
+              Feito para colecionadores, criadores e cultura
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-[#9E968F]">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-[#C5BCB3]">
             <a
               href="mailto:contato@email.com"
               className="hover:text-[#D98A53] transition-colors"
             >
               contato@email.com
             </a>
-            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline text-[#9E968F]">•</span>
             <a
               href="tel:+551140028922"
               className="hover:text-[#D98A53] transition-colors"
@@ -164,57 +163,55 @@ export function Footer() {
             </a>
           </div>
         </div>
-      </div>
 
-      {/* 3. Faixa Inferior (Links & Carteiras) */}
-      <div className="bg-[#181614] py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* 3. Faixa Inferior de Links */}
+        <div className="p-6 lg:p-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 font-mono text-xs">
             {/* Coluna 1: Meu perfil */}
             <div className="space-y-3">
-              <h5 className="font-bold text-[#F3EFEA] uppercase tracking-wider">
+              <h5 className="font-bold text-[#F3EFEA] tracking-wider">
                 Meu perfil
               </h5>
               <ul className="space-y-2">
-                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Visão geral</a></li>
-                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Meus NFTs</a></li>
-                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Favoritos</a></li>
-                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Histórico</a></li>
-                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Configurações</a></li>
+                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Meu perfil</a></li>
+                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Minha coleção</a></li>
+                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Atividade</a></li>
+                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Estúdio do criador</a></li>
+                <li><a href="/profile" className="hover:text-[#D98A53] transition-colors">Lista de interesse</a></li>
               </ul>
             </div>
 
             {/* Coluna 2: Central de ajuda */}
             <div className="space-y-3">
-              <h5 className="font-bold text-[#F3EFEA] uppercase tracking-wider">
+              <h5 className="font-bold text-[#F3EFEA] tracking-wider">
                 Central de ajuda
               </h5>
               <ul className="space-y-2">
-                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Suporte ao cliente</a></li>
-                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Perguntas frequentes</a></li>
-                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Como comprar</a></li>
-                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Taxas de gás</a></li>
-                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Termos de serviço</a></li>
+                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Central de ajuda</a></li>
+                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Como comprar NFTs</a></li>
+                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Carteira e segurança</a></li>
+                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Política do mercado</a></li>
+                <li><a href="#ajuda" className="hover:text-[#D98A53] transition-colors">Denunciar item</a></li>
               </ul>
             </div>
 
             {/* Coluna 3: Coleções */}
             <div className="space-y-3">
-              <h5 className="font-bold text-[#F3EFEA] uppercase tracking-wider">
+              <h5 className="font-bold text-[#F3EFEA] tracking-wider">
                 Coleções
               </h5>
               <ul className="space-y-2">
-                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Genesis Apes</a></li>
-                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Nomad Society</a></li>
-                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Cyberpunk Primates</a></li>
-                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Golden Beats</a></li>
-                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Todas as Coleções</a></li>
+                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Arte digital</a></li>
+                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Fotografia</a></li>
+                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Música</a></li>
+                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Arte 3D</a></li>
+                <li><a href="#catalogo" className="hover:text-[#D98A53] transition-colors">Utilidade</a></li>
               </ul>
             </div>
 
             {/* Coluna 4: Redes sociais e Carteiras compatíveis */}
             <div className="space-y-4">
-              <h5 className="font-bold text-[#F3EFEA] uppercase tracking-wider">
+              <h5 className="font-bold text-[#F3EFEA] tracking-wider">
                 Redes sociais
               </h5>
               <div className="flex items-center gap-2">
@@ -222,7 +219,7 @@ export function Footer() {
                   href="https://facebook.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="h-8 w-8 rounded border border-white/15 flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
+                  className="h-8 w-8 rounded border border-[#4d3320] bg-[#1B1512] flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
                   aria-label="Facebook"
                 >
                   <FacebookIcon />
@@ -231,7 +228,7 @@ export function Footer() {
                   href="https://instagram.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="h-8 w-8 rounded border border-white/15 flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
+                  className="h-8 w-8 rounded border border-[#4d3320] bg-[#1B1512] flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
                   aria-label="Instagram"
                 >
                   <InstagramIcon />
@@ -240,7 +237,7 @@ export function Footer() {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="h-8 w-8 rounded border border-white/15 flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
+                  className="h-8 w-8 rounded border border-[#4d3320] bg-[#1B1512] flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
                   aria-label="Twitter"
                 >
                   <TwitterIcon />
@@ -249,7 +246,7 @@ export function Footer() {
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="h-8 w-8 rounded border border-white/15 flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
+                  className="h-8 w-8 rounded border border-[#4d3320] bg-[#1B1512] flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
                   aria-label="LinkedIn"
                 >
                   <LinkedinIcon />
@@ -258,7 +255,7 @@ export function Footer() {
                   href="https://youtube.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="h-8 w-8 rounded border border-white/15 flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
+                  className="h-8 w-8 rounded border border-[#4d3320] bg-[#1B1512] flex items-center justify-center text-[#9E968F] hover:text-[#D98A53] hover:border-[#D98A53] transition-colors"
                   aria-label="YouTube"
                 >
                   <YoutubeIcon />
@@ -266,21 +263,21 @@ export function Footer() {
               </div>
 
               {/* Carteiras compatíveis */}
-              <div className="pt-2">
-                <p className="text-[11px] uppercase tracking-wider text-[#9E968F] mb-1.5 font-bold">
+              <div className="pt-2 space-y-2">
+                <p className="text-[11px] uppercase tracking-wider text-[#9E968F] font-bold">
                   Carteiras compatíveis
                 </p>
-                <p className="text-[11px] font-bold text-[#F3EFEA] tracking-wider">
-                  METAMASK — WALLETCONNECT — COINBASE
-                </p>
+                <div className="inline-block bg-[#1B1512] border border-[#37271c] px-3 py-1.5 rounded text-[10px] font-mono tracking-wider text-[#9E968F]">
+                  METAMASK • WALLETCONNECT • COINBASE
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 4. Base Absoluta: Copyright centralizado */}
-      <div className="bg-[#12100F] border-t border-white/5 py-6 text-center">
+      {/* 4. Base Absoluta: Copyright fora do retângulo, centralizado no tom de fundo geral #1B1512 */}
+      <div className="pt-8 text-center">
         <p className="font-mono text-xs text-[#9E968F]">
           &copy; 2026 Kurio. Propriedade digital para todos.
         </p>

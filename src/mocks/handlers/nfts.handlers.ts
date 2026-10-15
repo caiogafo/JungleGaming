@@ -22,7 +22,7 @@ export const nftsHandlers = [
     const maxPrice = url.searchParams.get('maxPrice') || ''
     const sort = url.searchParams.get('sort') || 'recent'
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10))
-    const pageSize = Math.max(1, parseInt(url.searchParams.get('pageSize') || '6', 10))
+    const pageSize = Math.max(1, parseInt(url.searchParams.get('pageSize') || '9', 10))
 
     let filtered = [...db.nfts]
 
@@ -65,13 +65,17 @@ export const nftsHandlers = [
 
     const total = filtered.length
     const totalPages = Math.ceil(total / pageSize) || 1
-    const startIndex = (page - 1) * pageSize
-    const items = filtered.slice(startIndex, startIndex + pageSize)
+    const safePage = page > totalPages ? 1 : page
+    const startIndex = (safePage - 1) * pageSize
+    let items = filtered.slice(startIndex, startIndex + pageSize)
+    if (items.length === 0 && filtered.length > 0) {
+      items = filtered.slice(0, pageSize)
+    }
 
     return HttpResponse.json({
       items,
       total,
-      page,
+      page: safePage,
       pageSize,
       totalPages,
     })

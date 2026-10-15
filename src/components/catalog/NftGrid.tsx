@@ -47,13 +47,13 @@ export function NftGrid({
   return (
     <div className="flex-1 w-full space-y-6">
       {/* Barra Superior: Abas e Ordenação */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
         {/* Abas de navegação */}
         <div className="flex items-center gap-6 font-mono text-xs">
           <button
             type="button"
             onClick={() => handleTabClick('all')}
-            className={`pb-3 font-semibold transition-colors relative ${
+            className={`pb-1.5 font-semibold transition-colors relative ${
               activeTab === 'all'
                 ? 'text-[#F3EFEA]'
                 : 'text-[#9E968F] hover:text-[#F3EFEA]'
@@ -61,14 +61,14 @@ export function NftGrid({
           >
             Todos os NFTs
             {activeTab === 'all' && (
-              <span className="absolute bottom-[-13px] left-0 right-0 h-[2px] bg-[#D98A53]" />
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
             )}
           </button>
 
           <button
             type="button"
             onClick={() => handleTabClick('recent')}
-            className={`pb-3 font-semibold transition-colors relative ${
+            className={`pb-1.5 font-semibold transition-colors relative ${
               activeTab === 'recent'
                 ? 'text-[#F3EFEA]'
                 : 'text-[#9E968F] hover:text-[#F3EFEA]'
@@ -76,14 +76,14 @@ export function NftGrid({
           >
             Novos lançamentos
             {activeTab === 'recent' && (
-              <span className="absolute bottom-[-13px] left-0 right-0 h-[2px] bg-[#D98A53]" />
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
             )}
           </button>
 
           <button
             type="button"
             onClick={() => handleTabClick('trending')}
-            className={`pb-3 font-semibold transition-colors relative ${
+            className={`pb-1.5 font-semibold transition-colors relative ${
               activeTab === 'trending'
                 ? 'text-[#F3EFEA]'
                 : 'text-[#9E968F] hover:text-[#F3EFEA]'
@@ -91,7 +91,7 @@ export function NftGrid({
           >
             Em alta
             {activeTab === 'trending' && (
-              <span className="absolute bottom-[-13px] left-0 right-0 h-[2px] bg-[#D98A53]" />
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D98A53]" />
             )}
           </button>
         </div>
@@ -126,10 +126,10 @@ export function NftGrid({
         </div>
       </div>
 
-      {/* Grid de Cards de NFTs (3 Colunas) */}
+      {/* Grid de Cards de NFTs (3 Colunas fixas conforme Figma) */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, idx) => (
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          {Array.from({ length: 9 }).map((_, idx) => (
             <NftCardSkeleton key={idx} />
           ))}
         </div>
@@ -153,7 +153,7 @@ export function NftGrid({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {nfts.map((nft) => (
               <NftCard key={nft.id} nft={nft} onOpenAuth={onOpenAuth} />
             ))}

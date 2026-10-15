@@ -545,6 +545,17 @@ class MockDbService {
         return {
           ...fresh,
           ...parsed,
+          scenarios: {
+            ...fresh.scenarios,
+            latencyMs:
+              typeof parsed.scenarios?.latencyMs === 'number'
+                ? parsed.scenarios.latencyMs
+                : fresh.scenarios.latencyMs,
+            simulateOffline: false,
+            simulate500: false,
+            simulateTimeoutOnOrder: false,
+            simulateRejectOrder: false,
+          },
           orders: Array.isArray(parsed.orders) ? parsed.orders : fresh.orders,
           userCarts: parsed.userCarts || fresh.userCarts,
           userWallets: parsed.userWallets || fresh.userWallets,

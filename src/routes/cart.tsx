@@ -49,7 +49,7 @@ function CartPage() {
     }
   }
 
-  const allItems = allNftsData?.items || []
+  const allItems = Array.isArray(allNftsData?.items) ? allNftsData.items : []
   const targetIds = ['nft_4', 'nft_5', 'nft_6', 'nft_1', 'nft_7']
   const sortedFeatured = targetIds
     .map((id) => allItems.find((n) => n.id === id))
@@ -111,12 +111,12 @@ function CartPage() {
                   {/* Thumbnail do NFT */}
                   <Link
                     to="/nft/$id"
-                    params={{ id: item.nft.id }}
+                    params={{ id: item.nft?.id || 'nft_1' }}
                     className="h-18 w-18 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-[#1B1512] shrink-0 border border-[#37271c]/40 block"
                   >
                     <img
-                      src={item.nft.image}
-                      alt={item.nft.name}
+                      src={item.nft?.image || '/assets/nfts/emerald_ape_hero.jpg'}
+                      alt={item.nft?.name || 'NFT'}
                       className="w-full h-full object-cover"
                     />
                   </Link>
@@ -125,13 +125,13 @@ function CartPage() {
                   <div className="flex-1 min-w-0 space-y-1">
                     <Link
                       to="/nft/$id"
-                      params={{ id: item.nft.id }}
+                      params={{ id: item.nft?.id || 'nft_1' }}
                       className="text-xs font-bold text-[#F3EFEA] hover:text-[#D98A53] transition-colors truncate block"
                     >
-                      {item.nft.name}
+                      {item.nft?.name || 'Colecionável'}
                     </Link>
                     <p className="text-[11px] text-[#9E968F]">
-                      Edição: {item.edition.name || '1/50'}
+                      Edição: {item.edition?.name || '1/50'}
                     </p>
                     <p className="text-xs font-bold text-[#D98A53]">
                       {formatEth(Number(item.unitPriceEth) * item.quantity)}
@@ -157,7 +157,7 @@ function CartPage() {
                     <button
                       type="button"
                       onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
-                      disabled={isUpdatingQuantity || item.quantity >= item.edition.availableSupply}
+                      disabled={isUpdatingQuantity || item.quantity >= (item.edition?.availableSupply ?? 999)}
                       className="h-6 w-6 rounded-full bg-[#2D211C] border border-[#3D2E27] text-[#9E968F] hover:text-[#F3EFEA] flex items-center justify-center font-bold text-xs disabled:opacity-30 transition-colors active:scale-95"
                       aria-label="Aumentar quantidade"
                     >
@@ -316,25 +316,25 @@ function CartPage() {
                     <div className="sm:col-span-5 flex items-center gap-3.5 min-w-0">
                       <Link
                         to="/nft/$id"
-                        params={{ id: item.nft.id }}
+                        params={{ id: item.nft?.id || 'nft_1' }}
                         className="h-14 w-14 rounded-xl overflow-hidden bg-[#241F1B] border border-[#37271c] shrink-0 block"
                       >
                         <img
-                          src={item.nft.image}
-                          alt={item.nft.name}
+                          src={item.nft?.image || '/assets/nfts/emerald_ape_hero.jpg'}
+                          alt={item.nft?.name || 'NFT'}
                           className="h-full w-full object-cover hover:scale-105 transition-transform"
                         />
                       </Link>
                       <div className="min-w-0">
                         <Link
                           to="/nft/$id"
-                          params={{ id: item.nft.id }}
+                          params={{ id: item.nft?.id || 'nft_1' }}
                           className="text-xs font-bold text-[#F3EFEA] hover:text-[#D98A53] transition-colors truncate block"
                         >
-                          {item.nft.name}
+                          {item.nft?.name || 'Colecionável'}
                         </Link>
                         <span className="text-[11px] text-[#9E968F] block">
-                          ID do token: #{item.nft.tokenId || '0042'}
+                          ID do token: #{item.nft?.tokenId || '0042'}
                         </span>
                       </div>
                     </div>
@@ -365,7 +365,7 @@ function CartPage() {
                         <button
                           type="button"
                           onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
-                          disabled={isUpdatingQuantity || item.quantity >= item.edition.availableSupply}
+                          disabled={isUpdatingQuantity || item.quantity >= (item.edition?.availableSupply ?? 999)}
                           className="h-5 w-5 rounded-full bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold flex items-center justify-center disabled:opacity-40 transition-colors"
                           aria-label="Aumentar quantidade"
                         >

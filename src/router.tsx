@@ -11,6 +11,7 @@ import { mercadoRoute } from './routes/mercado'
 import { loginRoute } from './routes/login'
 import { registerRoute } from './routes/register'
 import { NotFoundPage } from './routes/notFound'
+import { RootErrorComponent } from './components/feedback/RootErrorComponent'
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -28,6 +29,7 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: NotFoundPage,
+  defaultErrorComponent: RootErrorComponent,
 })
 
 declare module '@tanstack/react-router' {

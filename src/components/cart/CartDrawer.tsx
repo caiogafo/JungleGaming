@@ -99,24 +99,24 @@ export function CartDrawer({ isOpen, onClose, onOpenAuth }: CartDrawerProps) {
                     className="flex gap-4 p-3 rounded-xl border border-border/80 bg-surface-elevated transition-colors"
                   >
                     <img
-                      src={item.nft.image}
-                      alt={item.nft.name}
+                      src={item.nft?.image || '/assets/nfts/emerald_ape_hero.jpg'}
+                      alt={item.nft?.name || 'NFT'}
                       className="h-20 w-20 rounded-lg object-cover bg-stone-900 shrink-0 border border-border/60"
                     />
 
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
                         <div className="flex items-start justify-between gap-1">
-                          <h4 className="text-xs font-bold text-white truncate">{item.nft.name}</h4>
+                          <h4 className="text-xs font-bold text-white truncate">{item.nft?.name || 'Colecionável'}</h4>
                           <button
                             onClick={() => removeItem(item.id)}
                             className="text-stone-400 hover:text-red-400 p-0.5 transition-colors"
-                            aria-label={`Remover ${item.nft.name}`}
+                            aria-label={`Remover ${item.nft?.name || 'item'}`}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <p className="text-[11px] text-amber-400 font-medium">{item.edition.name}</p>
+                        <p className="text-[11px] text-amber-400 font-medium">{item.edition?.name || '1/50'}</p>
                         <p className="text-xs font-mono font-bold text-white mt-1">
                           {formatEth(item.unitPriceEth)}
                         </p>
@@ -138,7 +138,7 @@ export function CartDrawer({ isOpen, onClose, onOpenAuth }: CartDrawerProps) {
                           </span>
                           <button
                             onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
-                            disabled={isUpdatingQuantity || item.quantity >= item.edition.availableSupply}
+                            disabled={isUpdatingQuantity || item.quantity >= (item.edition?.availableSupply ?? 999)}
                             className="h-6 w-6 rounded flex items-center justify-center text-stone-400 hover:text-white disabled:opacity-30"
                             aria-label="Aumentar quantidade"
                           >

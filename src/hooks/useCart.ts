@@ -74,10 +74,11 @@ export function useCart() {
     queryClient.invalidateQueries({ queryKey: ['quote'] })
   }
 
-  const totalItemsCount = (cartQuery.data ?? []).reduce((acc, item) => acc + item.quantity, 0)
+  const safeItems: CartItem[] = Array.isArray(cartQuery.data) ? cartQuery.data : []
+  const totalItemsCount = safeItems.reduce((acc, item) => acc + (Number(item?.quantity) || 0), 0)
 
   return {
-    items: cartQuery.data ?? [],
+    items: safeItems,
     isLoadingCart: cartQuery.isLoading,
     quote: quoteQuery.data ?? null,
     isLoadingQuote: quoteQuery.isLoading,

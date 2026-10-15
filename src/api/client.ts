@@ -19,9 +19,22 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-// Response interceptor for session expiration and error normalization
+// Response interceptor for session expiration, HTML SPA fallback detection, and error normalization
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Detecta se a resposta recebida é HTML em vez de JSON (ex: resposta de fallback do Vercel antes da ativação do MSW)
+    if (
+      typeof response.data === 'string' &&
+      (response.data.trim().startsWith('<!doctype') ||
+        response.data.trim().startsWith('<html') ||
+        String(response.headers['content-type'] || '').includes('text/html'))
+    ) {
+      return Promise.reject(
+        new Error('O Mock Service Worker ainda não interceptou esta chamada. Tentando novamente...')
+      )
+    }
+    return response
+  },
   (error: AxiosError<{ message?: string }>) => {
     if (error.response?.status === 401) {
       // If token expired, clear token and notify session

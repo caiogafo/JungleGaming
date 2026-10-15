@@ -108,8 +108,17 @@ function NftDetailPage() {
   }
 
   const activeImage = nft.image
+  const defaultEdition = {
+    id: 'ed_default',
+    name: '1/50',
+    maxSupply: 50,
+    availableSupply: 50,
+    priceEth: nft.basePriceEth || '0.00',
+  }
+  const editionsList =
+    Array.isArray(nft.editions) && nft.editions.length > 0 ? nft.editions : [defaultEdition]
   const activeEdition =
-    nft.editions.find((e) => e.id === (selectedEditionId || nft.selectedEditionId)) || nft.editions[0]
+    editionsList.find((e) => e.id === (selectedEditionId || nft.selectedEditionId)) || editionsList[0]
   const isFav = isFavorite(nft.id)
 
   const handleAddToCart = async () => {
@@ -137,7 +146,7 @@ function NftDetailPage() {
   const thumbnails = [nft.image, nft.image, nft.image, nft.image]
 
   // Coleção "Mais desta coleção" (5 itens conforme Figma)
-  const collectionNfts = (allNftsData?.items || [])
+  const collectionNfts = (Array.isArray(allNftsData?.items) ? allNftsData.items : [])
     .filter((item) => item.id !== nft.id)
     .slice(0, 5)
 

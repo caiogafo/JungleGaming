@@ -355,7 +355,7 @@ function ReceiptPage() {
 
             {/* Items List */}
             <div className="space-y-3 pt-1">
-              {order.items.map((item, idx) => (
+              {(Array.isArray(order.items) ? order.items : []).map((item, idx) => (
                 <div key={idx} className="grid grid-cols-12 items-center text-xs">
                   {/* NFT thumbnail + name + token id */}
                   <div className="col-span-6 flex items-center gap-2.5 min-w-0 pr-2">

@@ -13,19 +13,28 @@ const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
       retry: (failureCount, error: any) => {
-        // Do not retry 4xx errors
-        if (error?.status >= 400 && error?.status < 500) return false
+        const status = error?.response?.status ?? error?.status
+        // Não retentar em erros 401 ou 403
+        if (status === 401 || status === 403) return false
         return failureCount < 2
       },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
     },
   },
 })
 
 async function initApp() {
-  // Start MSW worker to intercept REST and Socket.IO WebSocket traffic in browser
-  await enableMocking()
+  try {
+    // Inicia worker do MSW para interceptar REST e WebSockets do Socket.IO no navegador
+    await enableMocking()
+  } catch (err) {
+    console.warn('Aviso: Mock Service Worker não pôde ser ativado:', err)
+  }
 
-  ReactDOM.createRoot(document.getElementById('root')!).render(
+  const rootElement = document.getElementById('root')
+  if (!rootElement) return
+
+  ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />

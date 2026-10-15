@@ -8,8 +8,11 @@ import { CartDrawer } from '../components/cart/CartDrawer'
 import { AuthModal } from '../components/auth/AuthModal'
 import { useRealtimeSync } from '../socket/useRealtimeSync'
 
+import { RootErrorComponent } from '../components/feedback/RootErrorComponent'
+
 export const rootRoute = createRootRoute({
   component: RootComponent,
+  errorComponent: RootErrorComponent,
 })
 
 function RootComponent() {

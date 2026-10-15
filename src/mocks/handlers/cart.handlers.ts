@@ -231,8 +231,8 @@ export const cartHandlers = [
       }
     }
 
-    // Network Gas Fee: 0.0042 ETH flat simulation
-    const networkFeeEth = cartItems.length > 0 ? '0.004200' : '0.000000'
+    // Network Gas Fee: 0.016 ETH flat simulation (matching Figma exact quote)
+    const networkFeeEth = cartItems.length > 0 ? '0.016000' : '0.000000'
     const totalAfterDiscount = subEth(subtotalEth, discountEth)
     const totalEth = addEth(totalAfterDiscount, networkFeeEth)
 

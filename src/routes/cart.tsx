@@ -49,7 +49,12 @@ function CartPage() {
     }
   }
 
-  const featuredNfts = (allNftsData?.items || []).slice(0, 5)
+  const allItems = allNftsData?.items || []
+  const targetIds = ['nft_4', 'nft_5', 'nft_6', 'nft_1', 'nft_7']
+  const sortedFeatured = targetIds
+    .map((id) => allItems.find((n) => n.id === id))
+    .filter((n): n is NonNullable<typeof n> => !!n)
+  const featuredNfts = sortedFeatured.length >= 5 ? sortedFeatured : allItems.slice(0, 5)
 
   return (
     <>
@@ -342,14 +347,14 @@ function CartPage() {
                       </span>
                     </div>
 
-                    {/* Edições: [-] Qtd [+] com botões laranjas */}
+                    {/* Edições: [-] Qtd [+] com [-] em marrom escuro e [+] em laranja conforme Figma */}
                     <div className="sm:col-span-2 flex items-center justify-start sm:justify-center">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity - 1 })}
                           disabled={isUpdatingQuantity || item.quantity <= 1}
-                          className="h-5 w-5 rounded-full bg-[#D98A53] text-[#151312] font-bold flex items-center justify-center hover:bg-[#E59864] disabled:opacity-30 transition-colors"
+                          className="h-5 w-5 rounded-full bg-[#483327] hover:bg-[#5C4132] text-[#F3EFEA] font-bold flex items-center justify-center disabled:opacity-40 transition-colors"
                           aria-label="Diminuir quantidade"
                         >
                           <Minus className="h-3 w-3 stroke-[3]" />
@@ -361,7 +366,7 @@ function CartPage() {
                           type="button"
                           onClick={() => updateQuantity({ itemId: item.id, quantity: item.quantity + 1 })}
                           disabled={isUpdatingQuantity || item.quantity >= item.edition.availableSupply}
-                          className="h-5 w-5 rounded-full bg-[#D98A53] text-[#151312] font-bold flex items-center justify-center hover:bg-[#E59864] disabled:opacity-30 transition-colors"
+                          className="h-5 w-5 rounded-full bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-bold flex items-center justify-center disabled:opacity-40 transition-colors"
                           aria-label="Aumentar quantidade"
                         >
                           <Plus className="h-3 w-3 stroke-[3]" />
@@ -382,7 +387,7 @@ function CartPage() {
                       <button
                         type="button"
                         onClick={() => removeItem(item.id)}
-                        className="p-1.5 rounded-md text-[#9E968F] hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                        className="p-1.5 rounded-md text-[#9E968F] hover:text-[#F3EFEA] transition-colors"
                         aria-label={`Remover ${item.nft.name}`}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -396,7 +401,7 @@ function CartPage() {
 
           {/* Resumo da Carteira (Coluna Direita) */}
           <div className="lg:col-span-4 rounded-2xl border border-[#37271c] bg-[#291C19] p-5 shadow-xl space-y-5">
-            <h3 className="text-sm font-bold text-[#F3EFEA] border-b border-[#37271c] pb-3">
+            <h3 className="text-sm font-bold text-[#F3EFEA]">
               Resumo da carteira
             </h3>
 
@@ -415,7 +420,7 @@ function CartPage() {
                 <button
                   type="submit"
                   disabled={isApplyingCoupon}
-                  className="bg-[#D98A53] hover:bg-[#E59864] text-[#151312] px-4 h-9 font-bold text-xs uppercase transition-colors shrink-0"
+                  className="bg-[#D98A53] hover:bg-[#E59864] text-[#151312] px-4 h-9 font-bold text-xs transition-colors shrink-0"
                 >
                   {isApplyingCoupon ? '...' : 'Aplicar'}
                 </button>
@@ -441,12 +446,12 @@ function CartPage() {
             <div className="space-y-2.5 text-xs text-[#9E968F] pt-2 border-t border-[#37271c]">
               <div className="flex justify-between items-center">
                 <span>Subtotal</span>
-                <span className="text-[#F3EFEA] font-bold">{formatEth(quote?.subtotalEth)}</span>
+                <span className="text-[#F3EFEA] font-medium">{formatEth(quote?.subtotalEth)}</span>
               </div>
 
               <div className="flex justify-between items-center">
                 <span>Desconto do lançamento</span>
-                <span className="text-[#F3EFEA]">
+                <span className="text-[#9E968F]">
                   {quote?.discountEth && quote.discountEth !== '0.000000'
                     ? `(-) ${formatEth(quote.discountEth)}`
                     : '(-) 00.00'}
@@ -454,32 +459,38 @@ function CartPage() {
               </div>
 
               <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-[#9E968F] block">Taxa de rede</span>
-                  <span className="text-[10px] text-[#9E968F]/70 block">Taxa estimada</span>
+                <span>Taxa de rede</span>
+                <div className="text-right">
+                  <span className="text-[#F3EFEA] font-mono block">
+                    {formatEth(quote?.networkFeeEth, 3)}
+                  </span>
+                  <span className="text-[10px] text-[#C48247] block mt-0.5">
+                    Taxa estimada
+                  </span>
                 </div>
-                <span className="text-[#F3EFEA] font-mono">{formatEth(quote?.networkFeeEth)}</span>
               </div>
 
               <div className="flex justify-between items-center text-sm font-bold pt-3 border-t border-[#37271c]">
                 <span className="text-[#F3EFEA]">Total</span>
-                <span className="text-[#D98A53] text-base">{formatEth(quote?.totalEth)}</span>
+                <span className="text-[#D98A53] text-base font-bold">
+                  {formatEth(quote?.totalEth, 3)}
+                </span>
               </div>
             </div>
 
-            {/* Botão Principal: Continuar e conectar */}
+            {/* Botão Principal: Conectar e finalizar */}
             <button
               type="button"
               onClick={handleProceed}
-              className="w-full bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-mono font-bold text-xs uppercase h-10 px-4 rounded-md transition-colors shadow-md active:scale-95 flex items-center justify-center gap-2"
+              className="w-full bg-[#D98A53] hover:bg-[#E59864] text-[#151312] font-mono font-bold text-xs h-11 px-4 rounded-md transition-colors shadow-md active:scale-95 flex items-center justify-center gap-2"
             >
-              Continuar e conectar
+              Conectar e finalizar
             </button>
 
             <div className="text-center pt-1">
               <Link
                 to="/"
-                className="text-xs text-[#9E968F] hover:text-[#F3EFEA] transition-colors"
+                className="text-xs text-[#D98A53] hover:underline transition-colors"
               >
                 Continuar explorando
               </Link>
@@ -488,22 +499,46 @@ function CartPage() {
         </div>
       )}
 
-      {/* Seção Coleções em alta (5 cards + 3 pontos centralizados conforme Figma) */}
+      {/* Seção Colecionadores também viram (exatamente idêntica ao Figma) */}
       <div className="pt-10 space-y-6">
-        <h2 className="font-mono text-base font-bold text-[#D98A53]">
-          Coleções em alta
-        </h2>
+        <div className="border-b border-[#37271c] pb-3">
+          <h2 className="font-mono text-sm font-bold text-[#D98A53]">
+            Colecionadores também viram
+          </h2>
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {featuredNfts.map((item) => (
-            <NftCard key={item.id} nft={item} />
+          {featuredNfts.map((nft) => (
+            <Link
+              key={nft.id}
+              to="/nft/$id"
+              params={{ id: nft.id }}
+              className="group block space-y-2.5 transition-transform hover:-translate-y-1"
+            >
+              <div className="aspect-square w-full rounded-2xl overflow-hidden bg-[#241F1B] border border-[#37271c]">
+                <img
+                  src={nft.image}
+                  alt={nft.name}
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-[#F3EFEA] group-hover:text-[#D98A53] transition-colors truncate">
+                  {nft.name}
+                </p>
+                <p className="text-xs font-bold text-[#D98A53]">
+                  {formatEth(nft.basePriceEth)}
+                </p>
+              </div>
+            </Link>
           ))}
         </div>
 
-        <div className="flex justify-center items-center gap-2 pt-4">
+        {/* 3 pontos de paginação centralizados: ○ ● ○ */}
+        <div className="flex justify-center items-center gap-2 pt-2">
+          <span className="h-1.5 w-1.5 rounded-full border border-[#D98A53] bg-transparent" aria-hidden="true" />
           <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]" aria-hidden="true" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]/50" aria-hidden="true" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]/20" aria-hidden="true" />
+          <span className="h-1.5 w-1.5 rounded-full border border-[#D98A53] bg-transparent" aria-hidden="true" />
         </div>
       </div>
       </div>

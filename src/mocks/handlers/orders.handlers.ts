@@ -127,7 +127,7 @@ export const ordersHandlers = [
         }
       }
 
-      const networkFeeEth = '0.004200'
+      const networkFeeEth = '0.016000'
       const totalAfterDiscount = subEth(subtotalEth, discountEth)
       const totalEth = addEth(totalAfterDiscount, networkFeeEth)
 

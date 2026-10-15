@@ -6,6 +6,7 @@ import { FilterSidebar } from '../components/catalog/FilterSidebar'
 import { NftGrid } from '../components/catalog/NftGrid'
 import { PromoBanners } from '../components/catalog/PromoBanners'
 import { MintingJournal } from '../components/catalog/MintingJournal'
+import { Pagination } from '../components/catalog/Pagination'
 import { useNfts } from '../hooks/useNfts'
 import { useFavorites } from '../hooks/useFavorites'
 import { useCart } from '../hooks/useCart'
@@ -316,6 +317,25 @@ function CatalogPage() {
               Nenhum NFT encontrado com os filtros atuais.
             </div>
           )}
+        </div>
+
+        {/* Paginação no Mobile */}
+        <div className="pt-2">
+          <Pagination
+            currentPage={searchParams.page || 1}
+            totalPages={data?.totalPages || 1}
+            onPageChange={(page) => updateFilters({ page })}
+          />
+        </div>
+
+        {/* 2.4 Banners Promocionais no Mobile */}
+        <div className="w-full pt-4">
+          <PromoBanners />
+        </div>
+
+        {/* 2.5 Diário da Cunhagem (Blog) no Mobile */}
+        <div className="w-full pb-8">
+          <MintingJournal />
         </div>
 
         {/* Modal / Gaveta de Filtro no Mobile */}

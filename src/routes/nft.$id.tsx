@@ -273,6 +273,27 @@ function NftDetailPage() {
           </div>
         </div>
 
+        {/* 4. Seção "Mais desta coleção" no Mobile (conforme Figma) */}
+        <div className="pt-8 space-y-4">
+          <h2 className="font-mono text-sm font-bold text-[#D98A53]">
+            Mais desta coleção
+          </h2>
+
+          {/* Grade de 2 colunas para cards no mobile */}
+          <div className="grid grid-cols-2 gap-3.5">
+            {collectionNfts.map((item) => (
+              <NftCard key={item.id} nft={item} />
+            ))}
+          </div>
+
+          {/* Três pequenos pontos de paginação centralizados conforme Figma: ○ ● ○ */}
+          <div className="flex justify-center items-center gap-2 pt-2">
+            <span className="h-1.5 w-1.5 rounded-full border border-[#D98A53] bg-transparent" aria-hidden="true" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]" aria-hidden="true" />
+            <span className="h-1.5 w-1.5 rounded-full border border-[#D98A53] bg-transparent" aria-hidden="true" />
+          </div>
+        </div>
+
         {/* Notificação toast de item adicionado */}
         {addedToast && (
           <div className="fixed top-4 left-4 right-4 z-50 p-3 rounded-xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-mono text-xs text-center shadow-2xl animate-in fade-in">
@@ -674,11 +695,11 @@ function NftDetailPage() {
           ))}
         </div>
 
-        {/* Três pequenos pontos de paginação centralizados conforme Figma */}
+        {/* Três pequenos pontos de paginação centralizados conforme Figma: ○ ● ○ */}
         <div className="flex justify-center items-center gap-2 pt-4">
+          <span className="h-1.5 w-1.5 rounded-full border border-[#D98A53] bg-transparent" aria-hidden="true" />
           <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]" aria-hidden="true" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]/50" aria-hidden="true" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#D98A53]/20" aria-hidden="true" />
+          <span className="h-1.5 w-1.5 rounded-full border border-[#D98A53] bg-transparent" aria-hidden="true" />
         </div>
       </div>
 
